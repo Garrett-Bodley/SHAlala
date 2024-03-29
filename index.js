@@ -151,7 +151,7 @@ async function initTone() {
   toneStart = true;
   await Tone.start();
   Tone.Destination.volume.value = parseFloat(-20);
-  Tone.Transport.bpm.value = 120;
+  Tone.Transport.bpm.value = 200;
 }
 
 async function handleRangeOnInput(e) {
@@ -173,7 +173,7 @@ async function handleOnSubmit(e) {
   hash = await computeSHA1(inputText);
   logHash();
   document.getElementById("sha").textContent = "SHA1 Hash: " + hash;
-  playChordPart(hash);
+  playNotePart(hash);
 }
 
 async function computeSHA1(text) {
@@ -204,7 +204,7 @@ function logHash() {
 // }
 
 function hashToNotes(hash) {
-  return hash.split("").map((char) => LOCRIAN[char]);
+  return hash.split("").map((char) => IONIAN[char]);
   // return hash.split("").map((char) => MODES[Math.floor(Math.random() * MODES.length)][char])
 }
 
