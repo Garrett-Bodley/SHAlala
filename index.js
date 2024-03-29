@@ -34,7 +34,7 @@ DORIAN = {
   d: "Bb5",
   e: "C6",
   f: "D6",
-}
+};
 
 PHRYGIAN = {
   0: "C4",
@@ -53,7 +53,7 @@ PHRYGIAN = {
   d: "Bb5",
   e: "C6",
   f: "D6",
-}
+};
 
 LYDIAN = {
   0: "C4",
@@ -72,7 +72,7 @@ LYDIAN = {
   d: "B5",
   e: "C6",
   f: "D6",
-}
+};
 
 MIXOLYDIAN = {
   0: "C4",
@@ -91,7 +91,7 @@ MIXOLYDIAN = {
   d: "Bb5",
   e: "C6",
   f: "D6",
-}
+};
 
 AEOLIAN = {
   0: "C4",
@@ -110,7 +110,7 @@ AEOLIAN = {
   d: "Bb5",
   e: "C6",
   f: "D6",
-}
+};
 
 LOCRIAN = {
   0: "C4",
@@ -129,12 +129,15 @@ LOCRIAN = {
   d: "Bb5",
   e: "C6",
   f: "Db6",
-}
+};
 
-MODES = [IONIAN, DORIAN, PHRYGIAN, LYDIAN, MIXOLYDIAN, AEOLIAN, LOCRIAN]
+MODES = [IONIAN, DORIAN, PHRYGIAN, LYDIAN, MIXOLYDIAN, AEOLIAN, LOCRIAN];
 
 let toneStart = false;
 let synth;
+
+let chordSynths = []
+
 let drone;
 
 document.addEventListener("DOMContentLoaded", (_e) => {
@@ -170,7 +173,7 @@ async function handleOnSubmit(e) {
   hash = await computeSHA1(inputText);
   logHash();
   document.getElementById("sha").textContent = "SHA1 Hash: " + hash;
-  playNotes(hash);
+  playChordPart(hash);
 }
 
 async function computeSHA1(text) {
@@ -187,47 +190,77 @@ function logHash() {
   console.log({ hash });
 }
 
-function hashToChords(hash) {
-  const chords = [];
-  Tone.Transport.clear();
-  for (let i = 0; i < hash.length; i += 8) {
-    chords.push(
-      hash
-        .slice(i, i + 8)
-        .split("")
-        .map((char) => MODES[Math.floor(Math.random() * MODES.length)][char])
-    );
-  }
-  return chords;
-}
+// function hashToChords(hashString) {
+//   const chords = [];
+//   for (let i = 0; i < hashString.length; i += 8) {
+//     chords.push(
+//       hashString
+//         .slice(i, i + 8)
+//         .split("")
+//         .map((char) => MODES[Math.floor(Math.random() * MODES.length)][char])
+//     );
+//   }
+//   return chords;
+// }
 
 function hashToNotes(hash) {
-  return hash.split("").map((char) => LYDIAN[char])
+  return hash.split("").map((char) => LOCRIAN[char]);
   // return hash.split("").map((char) => MODES[Math.floor(Math.random() * MODES.length)][char])
 }
 
-function playNotes(hash) {
-  const notes = hashToNotes(hash);
-  console.log(notes);
+function playNotePart(hash) {
+  // This plays the hash once and then stops. It works!
+  // No Chords
+  console.log('playNotePart')
+  notes = hashToNotes(hash);
+  if (synth) synth.dispose();
+  if (drone) drone.dispose();
+  synth = new Tone.PolySynth(Tone.Synth).toDestination();
+  drone = new Tone.PolySynth(Tone.Synth).toDestination();
+  Tone.Transport.stop();
+  Tone.Transport.clear(0);
 
+  let startTime = 0;
+  let duration = '8t'
+
+  notes.forEach(note => {
+    Tone.Transport.scheduleOnce(time => {
+      synth.triggerAttackRelease(note, duration, time)
+    }, startTime);
+    startTime += Tone.Time(duration).toSeconds();
+  })
+
+  // Tone.Transport.scheduleOnce(time => {
+  //   notes.forEach(note => {
+  //     synth.triggerAttackRelease(note, '8t', time)
+  //   });
+  // }, 0);
+  drone.triggerAttack(['C2', 'C3'], Tone.now());
+  Tone.Transport.start();
+}
+
+function playNoteSequence(hash) {
+  // This loops through the hash notes. Plays one note at a time.
+  // No chords. It works!
+  const notes = hashToNotes(hash);
   console.log({ notes });
 
   if (synth) synth.dispose();
-  if (drone) drone.dispose()
+  if (drone) drone.dispose();
 
   synth = new Tone.PolySynth(Tone.Synth).toDestination();
   drone = new Tone.PolySynth(Tone.Synth).toDestination();
-  Tone.Transport.clear(0)
+  Tone.Transport.clear(0);
 
   const sequence = new Tone.Sequence(
     (time, note) => {
       // 'note' is an element of the 'notes' array
-      synth.triggerAttackRelease(note, "8t", time);
+      synth.triggerAttackRelease(note, "8n", time);
     },
     notes, // The array of chords to be played by the sequence
-    "8t" // The interval at which each chord is played ("1m" = once per measure)
+    "8n" // The interval at which each chord is played ("1m" = once per measure)
   );
-  drone.triggerAttack(['C2', 'C3'], Tone.now())
+  drone.triggerAttack(["C2", "C3"], Tone.now());
 
   sequence.start();
   Tone.Transport.start();
@@ -239,9 +272,47 @@ function playNotes(hash) {
   // Tone.Transport.schedule((time) => Tone.Transport.stop(), `${totalTime}`)
 }
 
-function playChords(time, chords, synth) {
-  chords.forEach((chord, index) => {
-    const startTime = time + index * Tone.Time("4n").toSeconds();
-    synth.triggerAttackRelease(chord, "4n", startTime);
-  });
+function playChordPart(hash) {
+  // Plays five chords in a row and then stops. It works!
+  console.log('playChordPart')
+  hashNotes = hashToNotes(hash);
+  chords = makeChordsFromNotes(hashNotes)
+
+  if (drone) drone.dispose();
+  chordSynths.forEach( synth => synth.dispose() )
+
+  chordSynths = chords.map( () => new Tone.PolySynth(Tone.Synth).toDestination())
+
+  drone = new Tone.PolySynth(Tone.Synth).toDestination();
+  Tone.Transport.stop();
+  Tone.Transport.clear(0);
+
+  let startTime = 0;
+  let duration = '8t'
+  console.log({ chords })
+  chords.forEach((chord, idx) => {
+    Tone.Transport.scheduleOnce(time => {
+      chordSynths[idx].triggerAttackRelease(chord, duration, time)
+    }, startTime);
+    startTime += Tone.Time(duration).toSeconds();
+  })
+
+  drone.triggerAttack(['C2', 'C3'], Tone.now());
+  Tone.Transport.start();
 }
+
+function makeChordsFromNotes(notes) {
+  chords = []
+  for(let i = 0; i < notes.length; i += 8) {
+    chords.push(notes.slice(i, i + 8))
+  }
+  return chords
+}
+
+// // Maybe deprecating? Idk if this is good for anything
+// function playChords(time, chords, synth) {
+//   chords.forEach((chord, index) => {
+//     const startTime = time + index * Tone.Time("4n").toSeconds();
+//     synth.triggerAttackRelease(chord, "4n", startTime);
+//   });
+// }
