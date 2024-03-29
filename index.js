@@ -22,30 +22,31 @@ let synth;
 
 document.addEventListener("DOMContentLoaded", (_e) => {
   document.getElementById("form").addEventListener("submit", handleOnSubmit);
-  document.getElementById("range-input").addEventListener("input", handleRangeOnInput)
+  document
+    .getElementById("range-input")
+    .addEventListener("input", handleRangeOnInput);
 });
 
-function initTone() {
+async function initTone() {
   toneStart = true;
-  Tone.start();
+  await Tone.start();
   Tone.Transport.bpm.value = 120;
-  synth = new Tone.PolySynth(Tone.Synth).toDestination();
 }
 
-function handleRangeOnInput(e) {
+async function handleRangeOnInput(e) {
   e.preventDefault();
-  if(toneStart == false) initTone();
+  if (toneStart == false) initTone();
 
-  newRangeValue = e.target.value;
+  let newRangeValue = e.target.value;
   document.getElementById("range-value").innerText = newRangeValue;
   // Tone.Transport.bpm.value = newRangeValue;
-  Tone.Transport.bpm.rampTo(newRangeValue, 0.1)
-  console.log({newRangeValue})
+  Tone.Transport.bpm.rampTo(newRangeValue, 0.1);
+  console.log({ newRangeValue });
 }
 
 async function handleOnSubmit(e) {
   e.preventDefault();
-  if(toneStart == false) initTone();
+  if (toneStart == false) initTone();
 
   const inputText = document.getElementById("form-input").value;
   hash = await computeSHA1(inputText);
@@ -68,7 +69,7 @@ function logHash() {
   console.log({ hash });
 }
 
-function hashToChords(hash){
+function hashToChords(hash) {
   const chords = [];
   Tone.Transport.clear();
   for (let i = 0; i < hash.length; i += 8) {
@@ -79,7 +80,7 @@ function hashToChords(hash){
         .map((char) => NOTE_MAPPING[char])
     );
   }
-  return chords
+  return chords;
 }
 
 function playNotes(hash) {
@@ -87,8 +88,35 @@ function playNotes(hash) {
   console.log(chords);
 
   console.log({ chords });
+
+  if (synth) {
+    synth.dispose();
+  }
+  synth = new Tone.PolySynth(Tone.Synth).toDestination();
+  Tone.Transport.clear(0)
+  // events = chords.map(chord => {
+  //   new Tone.Event(time => {
+  //     synth.triggerAttackRelease(chord, '4n', time)
+  //   })
+  // })
+
+  const sequence = new Tone.Sequence(
+    (time, chord) => {
+      // 'chord' is an element of the 'chords' array
+      synth.triggerAttackRelease(chord, "1n", time);
+    },
+    chords, // The array of chords to be played by the sequence
+    "1m" // The interval at which each chord is played ("1m" = once per measure)
+  );
+
+  sequence.start();
   Tone.Transport.start();
-  Tone.Transport.schedule((time) => playChords(time, chords, synth));
+
+  // Tone.Transport.clear(0);
+  // Tone.Transport.start();
+  // Tone.Transport.schedule((time) => playChords(time, chords, synth), "4n");
+  // const totalTime = chords.length * Tone.Time("4n").toSeconds();
+  // Tone.Transport.schedule((time) => Tone.Transport.stop(), `${totalTime}`)
 }
 
 function playChords(time, chords, synth) {
