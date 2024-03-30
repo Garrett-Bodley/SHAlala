@@ -177,7 +177,11 @@ async function handleOnSubmit(e) {
 
   const synth = new Tone.Synth().toDestination();
 
-  const notes = [...hash].map((char, charIdx) => (
+  const playShortHash = document.getElementById("playShortHashCheckbox").checked;
+
+  const hashToPlay = playShortHash ? hash.slice(0, 8) : hash;
+
+  const notes = [...hashToPlay].map((char, charIdx) => (
     { pitch: DORIAN[char], timing: charIdx === 0? 0 : 0.1 }
   ));
 
@@ -189,7 +193,7 @@ async function handleOnSubmit(e) {
       }
   }
   play();
-  
+
   return;
 
   playNotePart(hash);

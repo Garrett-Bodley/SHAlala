@@ -16,6 +16,14 @@
       #maincontent {
         max-width:42em;margin:15 auto;
       }
+
+      label { 
+        /* make text not selectable to prevent selection when clicking a checkbox label */
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
     </style>
   </head>
 
@@ -31,6 +39,10 @@
           tempo:<br/>
           <input id="range-input" value="200" type="range" min="60" max="240" />
           <span id="range-value">200</span>
+        </div>
+        <div>
+          <input type="checkbox" id="playShortHashCheckbox" />
+          <label for="playShortHashCheckbox">play the short hash</label>
         </div>
         <div id="sha"></div>
         <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
