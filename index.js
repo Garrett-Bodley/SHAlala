@@ -209,19 +209,6 @@ function logHash() {
   console.log({ hash });
 }
 
-// function hashToChords(hashString) {
-//   const chords = [];
-//   for (let i = 0; i < hashString.length; i += 8) {
-//     chords.push(
-//       hashString
-//         .slice(i, i + 8)
-//         .split("")
-//         .map((char) => MODES[Math.floor(Math.random() * MODES.length)][char])
-//     );
-//   }
-//   return chords;
-// }
-
 function hashToNotes(hash) {
   return hash.split("").map((char) => IONIAN[char]);
   // return hash.split("").map((char) => MODES[Math.floor(Math.random() * MODES.length)][char])
@@ -249,11 +236,6 @@ function playNotePart(hash) {
     startTime += Tone.Time(duration).toSeconds();
   })
 
-  // Tone.Transport.scheduleOnce(time => {
-  //   notes.forEach(note => {
-  //     synth.triggerAttackRelease(note, '8t', time)
-  //   });
-  // }, 0);
   drone.triggerAttack(['C2', 'C3'], Tone.now());
   Tone.Transport.start();
 }
@@ -295,7 +277,8 @@ function playChordPart(hash) {
   // Plays five chords in a row and then stops. It works!
   console.log('playChordPart')
   hashNotes = hashToNotes(hash);
-  chords = makeChordsFromNotes(hashNotes)
+  chords = makeChordsFromNotes(hashNotes, 4)
+  console.log( { chords })
 
   if (drone) drone.dispose();
   chordSynths.forEach( synth => synth.dispose() )
@@ -320,10 +303,10 @@ function playChordPart(hash) {
   Tone.Transport.start();
 }
 
-function makeChordsFromNotes(notes) {
+function makeChordsFromNotes(notes, voiceCount) {
   chords = []
-  for(let i = 0; i < notes.length; i += 8) {
-    chords.push(notes.slice(i, i + 8))
+  for(let i = 0; i < notes.length; i += voiceCount) {
+    chords.push(notes.slice(i, Math.max(i + voiceCount, notes.length - 1)))
   }
   return chords
 }
