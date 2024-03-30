@@ -1,4 +1,4 @@
-IONIAN = {
+const IONIAN = {
   0: "C4",
   1: "D4",
   2: "E4",
@@ -17,7 +17,7 @@ IONIAN = {
   f: "D6",
 };
 
-DORIAN = {
+const DORIAN = {
   0: "C4",
   1: "D4",
   2: "Eb4",
@@ -36,7 +36,7 @@ DORIAN = {
   f: "D6",
 };
 
-PHRYGIAN = {
+const PHRYGIAN = {
   0: "C4",
   1: "Db4",
   2: "Eb4",
@@ -55,7 +55,7 @@ PHRYGIAN = {
   f: "D6",
 };
 
-LYDIAN = {
+const LYDIAN = {
   0: "C4",
   1: "D4",
   2: "E4",
@@ -74,7 +74,7 @@ LYDIAN = {
   f: "D6",
 };
 
-MIXOLYDIAN = {
+const MIXOLYDIAN = {
   0: "C4",
   1: "D4",
   2: "E4",
@@ -93,7 +93,7 @@ MIXOLYDIAN = {
   f: "D6",
 };
 
-AEOLIAN = {
+const AEOLIAN = {
   0: "C4",
   1: "D4",
   2: "Eb4",
@@ -112,7 +112,7 @@ AEOLIAN = {
   f: "D6",
 };
 
-LOCRIAN = {
+const LOCRIAN = {
   0: "C4",
   1: "Db4",
   2: "Eb4",
@@ -131,7 +131,7 @@ LOCRIAN = {
   f: "Db6",
 };
 
-MODES = [IONIAN, DORIAN, PHRYGIAN, LYDIAN, MIXOLYDIAN, AEOLIAN, LOCRIAN];
+const MODES = [IONIAN, DORIAN, PHRYGIAN, LYDIAN, MIXOLYDIAN, AEOLIAN, LOCRIAN];
 
 let toneStart = false;
 let synth;
@@ -170,8 +170,8 @@ async function handleOnSubmit(e) {
   if (toneStart == false) await initTone();
 
   const inputText = document.getElementById("form-input").value;
-  hash = await computeSHA1(inputText);
-  logHash();
+  const hash = await computeSHA1(inputText);
+  console.log({ hash });
   document.getElementById("sha").textContent = "SHA1 Hash: " + hash;
   playNotePart(hash);
 }
@@ -184,10 +184,6 @@ async function computeSHA1(text) {
     .map((b) => b.toString(16).padStart(2, "0"))
     .join(""); // convert bytes to hex string
   return hashHex;
-}
-
-function logHash() {
-  console.log({ hash });
 }
 
 // function hashToChords(hashString) {
@@ -212,7 +208,7 @@ function playNotePart(hash) {
   // This plays the hash once and then stops. It works!
   // No Chords
   console.log('playNotePart')
-  notes = hashToNotes(hash);
+  const notes = hashToNotes(hash);
   if (synth) synth.dispose();
   if (drone) drone.dispose();
   synth = new Tone.PolySynth(Tone.Synth).toDestination();
