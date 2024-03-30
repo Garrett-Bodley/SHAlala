@@ -200,9 +200,18 @@ async function handleOnSubmit(e) {
 
   const hashToPlay = playShortHash ? hash.slice(0, 8) : hash;
 
-  const notes = [...hashToPlay].map((char, charIdx) => (
-    { pitch: DORIAN[char], timing: charIdx === 0? 0 : 0.1 }
-  ));
+  const notes = [...hashToPlay].map((char, charIdx) => {
+    let timing;
+    if (charIdx === 0) {
+      timing = 0;
+    } else if(charIdx === hashToPlay.length - 1) {
+      timing = 0.05
+    } else {
+      timing = Number(`0x${hashToPlay[charIdx+1]}`) / 48;
+    }
+    return { pitch: DORIAN[char], timing }
+  }
+  );
 
   function play() {
       let delay = Tone.now();
