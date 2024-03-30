@@ -17,7 +17,7 @@ CHROMATIC = {
   f: "Eb6",
 };
 
-IONIAN = {
+const IONIAN = {
   0: "C4",
   1: "D4",
   2: "E4",
@@ -36,7 +36,7 @@ IONIAN = {
   f: "D6",
 };
 
-DORIAN = {
+const DORIAN = {
   0: "C4",
   1: "D4",
   2: "Eb4",
@@ -55,7 +55,7 @@ DORIAN = {
   f: "D6",
 };
 
-PHRYGIAN = {
+const PHRYGIAN = {
   0: "C4",
   1: "Db4",
   2: "Eb4",
@@ -74,7 +74,7 @@ PHRYGIAN = {
   f: "D6",
 };
 
-LYDIAN = {
+const LYDIAN = {
   0: "C4",
   1: "D4",
   2: "E4",
@@ -93,7 +93,7 @@ LYDIAN = {
   f: "D6",
 };
 
-MIXOLYDIAN = {
+const MIXOLYDIAN = {
   0: "C4",
   1: "D4",
   2: "E4",
@@ -112,7 +112,7 @@ MIXOLYDIAN = {
   f: "D6",
 };
 
-AEOLIAN = {
+const AEOLIAN = {
   0: "C4",
   1: "D4",
   2: "Eb4",
@@ -131,7 +131,7 @@ AEOLIAN = {
   f: "D6",
 };
 
-LOCRIAN = {
+const LOCRIAN = {
   0: "C4",
   1: "Db4",
   2: "Eb4",
@@ -150,7 +150,7 @@ LOCRIAN = {
   f: "Db6",
 };
 
-MODES = [IONIAN, DORIAN, PHRYGIAN, LYDIAN, MIXOLYDIAN, AEOLIAN, LOCRIAN];
+const MODES = [IONIAN, DORIAN, PHRYGIAN, LYDIAN, MIXOLYDIAN, AEOLIAN, LOCRIAN];
 
 let toneStart = false;
 let synth;
@@ -189,9 +189,32 @@ async function handleOnSubmit(e) {
   if (toneStart == false) await initTone();
 
   const inputText = document.getElementById("form-input").value;
-  hash = await computeSHA1(inputText);
-  logHash();
+  const hash = await computeSHA1(inputText);
+
+  console.log({ hash });
   document.getElementById("sha").textContent = "SHA1 Hash: " + hash;
+
+  const synth = new Tone.Synth().toDestination();
+
+  const playShortHash = document.getElementById("playShortHashCheckbox").checked;
+
+  const hashToPlay = playShortHash ? hash.slice(0, 8) : hash;
+
+  const notes = [...hashToPlay].map((char, charIdx) => (
+    { pitch: DORIAN[char], timing: charIdx === 0? 0 : 0.1 }
+  ));
+
+  function play() {
+      let delay = Tone.now();
+      for(let i = 0; i < notes.length; i++) {
+          delay += notes[i].timing;
+          synth.triggerAttackRelease(notes[i].pitch, '8n', delay);
+      }
+  }
+  play();
+
+  return;
+
   playNotePart(hash);
 }
 
@@ -205,12 +228,8 @@ async function computeSHA1(text) {
   return hashHex;
 }
 
-function logHash() {
-  console.log({ hash });
-}
-
 function hashToNotes(hash) {
-  return hash.split("").map((char) => IONIAN[char]);
+  return hash.split("").map((char) => DORIAN[char]);
   // return hash.split("").map((char) => MODES[Math.floor(Math.random() * MODES.length)][char])
 }
 
@@ -218,7 +237,7 @@ function playNotePart(hash) {
   // This plays the hash once and then stops. It works!
   // No Chords
   console.log('playNotePart')
-  notes = hashToNotes(hash);
+  const notes = hashToNotes(hash);
   if (synth) synth.dispose();
   if (drone) drone.dispose();
   synth = new Tone.PolySynth(Tone.Synth).toDestination();
