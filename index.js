@@ -171,8 +171,27 @@ async function handleOnSubmit(e) {
 
   const inputText = document.getElementById("form-input").value;
   const hash = await computeSHA1(inputText);
+
   console.log({ hash });
   document.getElementById("sha").textContent = "SHA1 Hash: " + hash;
+
+  const synth = new Tone.Synth().toDestination();
+
+  const notes = [...hash].map((char, charIdx) => (
+    { pitch: DORIAN[char], timing: charIdx === 0? 0 : 0.1 }
+  ));
+
+  function play() {
+      let delay = Tone.now();
+      for(let i = 0; i < notes.length; i++) {
+          delay += notes[i].timing;
+          synth.triggerAttackRelease(notes[i].pitch, '8n', delay);  
+      }
+  }
+  play();
+  
+  return;
+
   playNotePart(hash);
 }
 
