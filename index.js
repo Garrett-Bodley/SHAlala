@@ -200,7 +200,7 @@ async function computeSHA1(text) {
 // }
 
 function hashToNotes(hash) {
-  return hash.split("").map((char) => IONIAN[char]);
+  return hash.split("").map((char) => DORIAN[char]);
   // return hash.split("").map((char) => MODES[Math.floor(Math.random() * MODES.length)][char])
 }
 

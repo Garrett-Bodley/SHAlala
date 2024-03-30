@@ -3,21 +3,42 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>HTML5 Boilerplate</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>SHAlala</title>
+    <style>
+      body { 
+        line-height: 1.4;
+          font-size: 16px;
+          padding: 0 10px;
+          margin: 10px auto;
+          max-width: 650px;
+      }
+
+      #maincontent {
+        max-width:42em;margin:15 auto;
+      }
+    </style>
   </head>
 
   <body>
-    <form id="form">
-      <input id="form-input" type="text" placeholder="enter text here" />
-      <button>make jingle</button>
-      <div>
-        <input id="range-input" value="200" type="range" min="60" max="240" />
-        <div id="range-value">200</div>
-      </div>
-      <div id="sha"></div>
-      <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
-      <script type="module" src="/index.js"></script>
-    </form>
+    <div class="maincontent">
+      <h1>SHAlala</h1>
+      <h2>Makes music out of SHA1</h2>
+
+      <form id="form">
+        <input id="form-input" type="text" placeholder="enter text here" />
+        <button>make jingle</button>
+        <div style="margin-top:10px;">
+          tempo:<br/>
+          <input id="range-input" value="200" type="range" min="60" max="240" />
+          <span id="range-value">200</span>
+        </div>
+        <div id="sha"></div>
+        <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
+        <script type="module" src="/index.js"></script>
+      </form>
+
+      <hr style="margin-top:30px;">
+      <a href="https://github.com/Garrett-Bodley/SHAlala">Source code</a>
+    </div>
   </body>
 </html>
