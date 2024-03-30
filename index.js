@@ -188,11 +188,11 @@ async function handleOnSubmit(e) {
     } else if(charIdx === hashToPlay.length - 1) {
       timing = 0.05
     } else {
-      timing = Number(`0x${hashToPlay[charIdx+1]}`) / 48;
+      // use a floor so that values are never 0
+      timing = Math.max(0.001, Number(`0x${hashToPlay[charIdx+1]}`) / 48);
     }
     return { pitch: DORIAN[char], timing }
-  }
-  );
+  });
 
   function play() {
       let delay = Tone.now();
