@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>SHAlala</title>
     <style>
-      body { 
+      body {
         line-height: 1.4;
           font-size: 16px;
           padding: 0 10px;
@@ -17,7 +17,7 @@
         max-width:42em;margin:15 auto;
       }
 
-      label { 
+      label {
         /* make text not selectable to prevent selection when clicking a checkbox label */
         -webkit-user-select: none;
         -moz-user-select: none;
@@ -33,17 +33,42 @@
       <h2>Turn Your SHA1 into Music If You Want to Do That For Some Reason</h2>
 
       <form id="form">
-        <input id="form-input" type="text" placeholder="enter text here" />
-        <button>make jingle</button>
+        <div>
+          <label for="form-input">Text Input:</label>
+          <input id="form-input" type="text" placeholder="enter text here" /><br/>
+        </div>
+        <div>
+          <label for="file-input" style="padding-top: 5px">Upload a file (Does not get sent to a server):</label>
+          <input id="fileInput" type="file" style="padding-top: 5px"/>
+        </div>
         <div style="margin-top:10px;">
           tempo:<br/>
           <input id="range-input" value="200" type="range" min="60" max="240" />
-          <span id="range-value">200</span>
+          <span id="range-value">180 BPM</span>
         </div>
         <div>
-          <input type="checkbox" id="playShortHashCheckbox" />
+          <input type="checkbox" checked="true" id="playShortHashCheckbox" />
           <label for="playShortHashCheckbox">play the short hash</label>
         </div>
+        <div style="margin-top:10px">
+          <label for="scaleSelect">Select a scale:</label>
+          <select id="scaleSelect">
+            <option value="ionian">Ionian</option>
+            <option value="dorian">Dorian</option>
+            <option value="phrygian">Phrygian</option>
+            <option value="lydian">Lydian</option>
+            <option value="mixolydian">Mixolydian</option>
+            <option value="aeolian">Aeolian</option>
+            <option value="locrian">Locrian</option>
+            <option value="chromatic">Chromatic</option>
+            <option value="diminished">Diminished</option>
+            <option value="wholetone">Whole tone</option>
+            <option value="minorpenta">Minor Pentatonic</option>
+            <option value="majorpenta">Major Pentatonic</option>
+          </select>
+        </div>
+        <button style="margin-top: 10px">SHAlala</button>
+        <button id="stop">stop</button>
         <div id="sha"></div>
         <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
         <script type="module" src="/index.js"></script>
