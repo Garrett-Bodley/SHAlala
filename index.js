@@ -226,7 +226,14 @@ const MAJORPENTA = {
   f: "Ab5"
 }
 
-const NOTE_DURATIONS = ['4n', '4t', '8n', '8t', '16n', '16t', '32n', '32t']
+// const NOTE_DURATIONS = ['4n', '4t', '8n', '8t', '16n', '16t', '32n', '32t']
+// const NOTE_DURATIONS = ['4n', '4t', '8n.', '8n', '8t', '16n.', '16n']
+// const NOTE_DURATIONS = ['4n', '4t', '8n', '8t', '16n', '16t', '32n', '32t'].sort(() => Math.random() - 0.5);
+// const NOTE_DURATIONS = ['4n', '4t', '8n', '8t', '16n', '16t', '32n', '32t'].sort(() => Math.random() - 0.5);
+// const NOTE_DURATIONS = ['4t', '8n', '16t', '16n', '8t', '32t', '4n', '32n'] // Randomized order using line above
+const NOTE_DURATIONS = ['4n.', '4n', '4t', '8n.', '8n', '8t', '16n.', '16n']
+
+// All rhythm options excluding anything >= half note triplet
 // const NOTE_DURATIONS = ['4n.', '4n', '4t', '8n.', '8n', '8t', '16n.', '16n', '16t', '32n.', '32n', '32t']
 
 const SCALES = {
@@ -356,8 +363,16 @@ function hashToNotes(hash, scale) {
 }
 
 function hashToNotesWithTempo(hash, scale) {
-  return hash.split("").map((char) => {
-    return { note: SCALES[scale][char], duration: NOTE_DURATIONS[Number(`0x${char}`) % NOTE_DURATIONS.length] }
+  let totalDuration = 0
+  let currentDuration
+  return hash.split("").map((char, idx) => {
+    if (idx == 0){
+      currentDuration = NOTE_DURATIONS[Number(`0x${char}`) % NOTE_DURATIONS.length]
+    }else{
+      currentDuration = NOTE_DURATIONS[Math.round(totalDuration * 10) % NOTE_DURATIONS.length]
+    }
+    totalDuration += Tone.Time(currentDuration)
+    return { note: SCALES[scale][char], duration: currentDuration }
   })
 }
 
