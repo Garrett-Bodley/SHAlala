@@ -394,7 +394,11 @@ function playNotePart(notes) {
   }, 0)
   console.log({totalDuration})
 
-  drone.triggerAttackRelease(['Ab3'], totalDuration);
+  drone.triggerAttack('Ab2')
+  Tone.Transport.scheduleOnce(time => {
+    drone.triggerRelease('Ab2');
+  }, totalDuration)
+
   notes.forEach((note) => {
     Tone.Transport.scheduleOnce(time => {
       synth.triggerAttackRelease(note.note, note.duration, time)
