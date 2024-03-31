@@ -351,8 +351,8 @@ function concatBuffers(buf1, buf2){
   if (!buf1) return buf2
   if (!buf2) return buf1
   const combined = new Uint8Array(buf1.byteLength + buf2.byteLength)
-  combined.set(buf1, 0)
-  combined.set(buf2, buf1.byteLength)
+  combined.set(new Uint8Array(buf1), 0)
+  combined.set(new Uint8Array(buf2), buf1.byteLength)
   return combined.buffer
 }
 
