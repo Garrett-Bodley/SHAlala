@@ -1,229 +1,229 @@
 const CHROMATIC = {
-  0: "C4",
-  1: "Db4",
-  2: "D4",
-  3: "Eb4",
-  4: "E4",
-  5: "F4",
-  6: "Gb4",
-  7: "G4",
-  8: "Ab4",
-  9: "A4",
-  a: "Bb4",
-  b: "B4",
-  c: "C5",
-  d: "Db5",
-  e: "D6",
-  f: "Eb6"
+  0: "Ab3",
+  1: "A3",
+  2: "Bb3",
+  3: "B3",
+  4: "C4",
+  5: "Db4",
+  6: "D4",
+  7: "Eb4",
+  8: "E4",
+  9: "F4",
+  a: "Gb4",
+  b: "G4",
+  c: "Ab4",
+  d: "A4",
+  e: "Bb5",
+  f: "B5"
 };
 
 const IONIAN = {
-  0: "C4",
-  1: "D4",
-  2: "E4",
-  3: "F4",
-  4: "G4",
-  5: "A4",
-  6: "B4",
-  7: "C5",
-  8: "D5",
-  9: "E5",
-  a: "F5",
-  b: "G5",
-  c: "A5",
-  d: "B5",
-  e: "C6",
-  f: "D6"
+  0: "Ab3",
+  1: "Bb3",
+  2: "C4",
+  3: "Db4",
+  4: "Eb4",
+  5: "F4",
+  6: "G4",
+  7: "Ab4",
+  8: "Bb4",
+  9: "C5",
+  a: "Db5",
+  b: "Eb5",
+  c: "F5",
+  d: "G5",
+  e: "Ab5",
+  f: "Bb5"
 };
 
 const DORIAN = {
-  0: "C4",
-  1: "D4",
-  2: "Eb4",
-  3: "F4",
-  4: "G4",
-  5: "A4",
-  6: "Bb4",
-  7: "C5",
-  8: "D5",
-  9: "Eb5",
-  a: "F5",
-  b: "G5",
-  c: "A5",
-  d: "Bb5",
-  e: "C6",
-  f: "D6"
+  0: "Ab3",
+  1: "Bb3",
+  2: "Cb3",
+  3: "Db4",
+  4: "Eb4",
+  5: "F4",
+  6: "Gb4",
+  7: "Ab4",
+  8: "Bb4",
+  9: "Cb4",
+  a: "Db5",
+  b: "Eb5",
+  c: "F5",
+  d: "Gb5",
+  e: "Ab5",
+  f: "Bb5"
 };
 
 const PHRYGIAN = {
-  0: "C4",
-  1: "Db4",
-  2: "Eb4",
-  3: "F4",
-  4: "G4",
-  5: "Ab4",
-  6: "Bb4",
-  7: "C5",
-  8: "Db5",
-  9: "Eb5",
-  a: "F5",
-  b: "G5",
-  c: "Ab5",
-  d: "Bb5",
-  e: "C6",
-  f: "D6"
+  0: "Ab3",
+  1: "Bbb3",
+  2: "Cb3",
+  3: "Db4",
+  4: "Eb4",
+  5: "Fb4",
+  6: "Gb4",
+  7: "Ab4",
+  8: "Bbb4",
+  9: "Cb4",
+  a: "Db5",
+  b: "Eb5",
+  c: "Fb5",
+  d: "Gb5",
+  e: "Ab5",
+  f: "Bb5"
 };
 
 const LYDIAN = {
-  0: "C4",
-  1: "D4",
-  2: "E4",
-  3: "F#4",
-  4: "G4",
-  5: "A4",
-  6: "B4",
-  7: "C5",
-  8: "D5",
-  9: "E5",
-  a: "F#5",
-  b: "G5",
-  c: "A5",
-  d: "B5",
-  e: "C6",
-  f: "D6"
+  0: "Ab3",
+  1: "Bb3",
+  2: "C4",
+  3: "D4",
+  4: "Eb4",
+  5: "F4",
+  6: "G4",
+  7: "Ab4",
+  8: "Bb4",
+  9: "C5",
+  a: "D5",
+  b: "Eb5",
+  c: "F5",
+  d: "G5",
+  e: "Ab5",
+  f: "Bb5"
 };
 
 const MIXOLYDIAN = {
-  0: "C4",
-  1: "D4",
-  2: "E4",
-  3: "F4",
-  4: "G4",
-  5: "A4",
-  6: "Bb4",
-  7: "C5",
-  8: "D5",
-  9: "E5",
-  a: "F5",
-  b: "G5",
-  c: "A5",
-  d: "Bb5",
-  e: "C6",
-  f: "D6"
+  0: "Ab3",
+  1: "Bb3",
+  2: "C4",
+  3: "Db4",
+  4: "Eb4",
+  5: "F4",
+  6: "Gb4",
+  7: "Ab4",
+  8: "Bb4",
+  9: "C5",
+  a: "Db5",
+  b: "Eb5",
+  c: "F5",
+  d: "Gb5",
+  e: "Ab5",
+  f: "Bb5"
 };
 
 const AEOLIAN = {
-  0: "C4",
-  1: "D4",
-  2: "Eb4",
-  3: "F4",
-  4: "G4",
-  5: "Ab4",
-  6: "Bb4",
-  7: "C5",
-  8: "D5",
-  9: "Eb5",
-  a: "F5",
-  b: "G5",
-  c: "Ab5",
-  d: "Bb5",
-  e: "C6",
-  f: "D6"
+  0: "Ab3",
+  1: "Bb3",
+  2: "Cb3",
+  3: "Db4",
+  4: "Gb4",
+  5: "Fb4",
+  6: "Gb4",
+  7: "Ab4",
+  8: "Bb4",
+  9: "Cb4",
+  a: "Db5",
+  b: "Gb5",
+  c: "Fb5",
+  d: "Gb5",
+  e: "Ab5",
+  f: "Bb5"
 };
 
 const LOCRIAN = {
-  0: "C4",
-  1: "Db4",
-  2: "Eb4",
-  3: "F4",
-  4: "Gb4",
-  5: "Ab4",
-  6: "Bb4",
-  7: "C5",
-  8: "Db5",
-  9: "Eb5",
-  a: "F5",
+  0: "Ab3",
+  1: "Bbb3",
+  2: "Cb3",
+  3: "Db4",
+  4: "Ebb4",
+  5: "Fb4",
+  6: "Gb4",
+  7: "Ab5",
+  8: "Bbb5",
+  9: "Cb5",
+  a: "Db5",
+  b: "Ebb5",
+  c: "Fb5",
+  d: "Gb5",
+  e: "Ab5",
+  f: "Bb5"
+};
+
+const DIMINISHED = {
+  0: "Ab3",
+  1: "Bb3",
+  2: "B3",
+  3: "C#4",
+  4: "D4",
+  5: "E4",
+  6: "F4",
+  7: "G4",
+  8: "Ab4",
+  9: "Bb4",
+  a: "B4",
+  b: "C#5",
+  c: "D5",
+  d: "E5",
+  e: "F5",
+  f: "G5"
+}
+
+const WHOLETONE = {
+  0: "Ab3",
+  1: "Bb3",
+  2: "C4",
+  3: "D4",
+  4: "E4",
+  5: "Gb4",
+  6: "Ab4",
+  7: "Bb4",
+  8: "C5",
+  9: "D5",
+  a: "E5",
   b: "Gb5",
   c: "Ab5",
   d: "Bb5",
   e: "C6",
-  f: "Db6"
-};
-
-const DIMINISHED = {
-  0: "C4",
-  1: "D4",
-  2: "Eb4",
-  3: "F4",
-  4: "Gb4",
-  5: "Ab4",
-  6: "A4",
-  7: "B4",
-  8: "C5",
-  9: "D5",
-  a: "Eb5",
-  b: "F5",
-  c: "Gb5",
-  d: "Ab5",
-  e: "A5",
-  f: "B5"
-}
-
-const WHOLETONE = {
-  0: "C4",
-  1: "D4",
-  2: "E4",
-  3: "Gb4",
-  4: "Ab4",
-  5: "Bb4",
-  6: "C5",
-  7: "D5",
-  8: "E5",
-  9: "Gb5",
-  a: "Ab5",
-  b: "Bb5",
-  c: "C6",
-  d: "D6",
-  e: "E6",
-  f: "Gb6"
+  f: "D6"
 }
 
 const MINORPENTA = {
-  0: "C3",
-  1: "Eb3",
-  2: "F3",
-  3: "G3",
-  4: "Bb3",
-  5: "C4",
-  6: "Eb4",
-  7: "F4",
-  8: "G4",
-  9: "Bb4",
-  a: "C5",
-  b: "Eb5",
-  c: "F5",
-  d: "G5",
-  e: "Bb5",
-  f: "C6"
+  0: "Ab2",
+  1: "Cb2",
+  2: "Db3",
+  3: "Eb3",
+  4: "Gb3",
+  5: "Ab3",
+  6: "Cb3",
+  7: "Db4",
+  8: "Eb4",
+  9: "Gb4",
+  a: "Ab4",
+  b: "Cb4",
+  c: "Db5",
+  d: "Eb5",
+  e: "Gb5",
+  f: "Ab5"
 }
 
 const MAJORPENTA = {
-  0: "C3",
-  1: "D3",
-  2: "E3",
-  3: "G3",
-  4: "A3",
-  5: "C4",
-  6: "D4",
-  7: "E4",
-  8: "G4",
-  9: "A4",
-  a: "C5",
-  b: "D5",
-  c: "E5",
-  d: "G5",
-  e: "A5",
-  f: "C6"
+  0: "Ab2",
+  1: "Bb2",
+  2: "C3",
+  3: "Eb3",
+  4: "F3",
+  5: "Ab3",
+  6: "Bb3",
+  7: "C4",
+  8: "Eb4",
+  9: "F4",
+  a: "Ab4",
+  b: "Bb4",
+  c: "C5",
+  d: "Eb5",
+  e: "F5",
+  f: "Ab5"
 }
 
 const NOTE_DURATIONS = ['4n', '4t', '8n', '8t', '16n', '16t', '32n', '32t']
@@ -317,10 +317,6 @@ async function handleOnSubmit(e) {
   //     }
   // }
   // play();
-
-  return;
-
-  playNotePart(hash);
 }
 
 async function computeSHA1(text, file) {
@@ -382,7 +378,7 @@ function playNotePart(notes) {
   }, 0)
   console.log({totalDuration})
 
-  drone.triggerAttackRelease(['C2', 'C3'], totalDuration);
+  drone.triggerAttackRelease(['Ab3'], totalDuration);
   notes.forEach((note) => {
     Tone.Transport.scheduleOnce(time => {
       synth.triggerAttackRelease(note.note, note.duration, time)
