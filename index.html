@@ -33,8 +33,11 @@
       <h2>Makes music out of SHA1</h2>
 
       <form id="form">
-        <input id="form-input" type="text" placeholder="enter text here" />
-        <button>make jingle</button>
+        <input id="form-input" type="text" placeholder="enter text here" /><br/>
+        <label for="file-input" style="padding-top: 5px; display: block">Upload a file (Does not get sent to a server):</label>
+        <input id="fileInput" type="file" style="padding-top: 5px; display: block"/>
+        <button style="margin-top: 10px">make jingle</button>
+
         <div style="margin-top:10px;">
           tempo:<br/>
           <input id="range-input" value="200" type="range" min="60" max="240" />

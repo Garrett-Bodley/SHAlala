@@ -226,7 +226,8 @@ const MAJORPENTA = {
   f: "C6"
 }
 
-const NOTE_DURATIONS = ['4n.', '4n', '4t', '8n.', '8n', '8t', '16n.', '16n', '16t', '32n.', '32n', '32t']
+const NOTE_DURATIONS = ['4n', '4t', '8n', '8t', '16n', '16t', '32n', '32t']
+// const NOTE_DURATIONS = ['4n.', '4n', '4t', '8n.', '8n', '8t', '16n.', '16n', '16t', '32n.', '32n', '32t']
 
 const SCALES = {
   ionian: IONIAN,
@@ -279,7 +280,8 @@ async function handleOnSubmit(e) {
   if (toneStart == false) await initTone();
 
   const inputText = document.getElementById("form-input").value;
-  const hash = await computeSHA1(inputText);
+  const inputFile = document.getElementById("fileInput").files[0]
+  const hash = await computeSHA1(inputText, inputFile)
 
   console.log({ hash });
   document.getElementById("sha").textContent = "SHA1 Hash: " + hash;
@@ -321,14 +323,35 @@ async function handleOnSubmit(e) {
   playNotePart(hash);
 }
 
-async function computeSHA1(text) {
-  const data = new TextEncoder().encode(text);
-  const hashBuffer = await crypto.subtle.digest("SHA-1", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+async function computeSHA1(text, file) {
+  const textBuffer = new TextEncoder().encode(text);
+  const fileBuffer = await readFileAsBuffer(file)
+  const joinedBuffer = concatBuffers(fileBuffer, textBuffer)
+  const hashBuffer = await crypto.subtle.digest("SHA-1", joinedBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashHex = hashArray
     .map((b) => b.toString(16).padStart(2, "0"))
     .join(""); // convert bytes to hex string
   return hashHex;
+}
+
+async function readFileAsBuffer(file){
+  return new Promise((resolve, reject) => {
+    if(!file) resolve(new Uint8Array)
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsArrayBuffer(file);
+  })
+}
+
+function concatBuffers(buf1, buf2){
+  if (!buf1) return buf2
+  if (!buf2) return buf1
+  const combined = new Uint8Array(buf1.byteLength + buf2.byteLength)
+  combined.set(new Uint8Array(buf1), 0)
+  combined.set(new Uint8Array(buf2), buf1.byteLength)
+  return combined.buffer
 }
 
 function hashToNotes(hash, scale) {
