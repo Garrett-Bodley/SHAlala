@@ -253,16 +253,15 @@ const SCALES = {
 
 let toneStart = false;
 let synth;
-
-let chordSynths = []
-
 let drone;
+let chordSynths = []
 
 document.addEventListener("DOMContentLoaded", (_e) => {
   document.getElementById("form").addEventListener("submit", handleOnSubmit);
   document
     .getElementById("range-input")
     .addEventListener("input", handleRangeOnInput);
+  document.getElementById('stop').addEventListener('click', stopSound);
 });
 
 async function initTone() {
@@ -383,6 +382,8 @@ function playNotePart(notes) {
 
   Tone.Transport.stop();
   Tone.Transport.cancel(0);
+  synth?.dispose();
+  drone?.dispose();
   synth = new Tone.PolySynth(Tone.Synth).toDestination();
   drone = new Tone.PolySynth(Tone.Synth).toDestination();
 
@@ -404,7 +405,13 @@ function playNotePart(notes) {
   Tone.Transport.start();
 }
 
-
+function stopSound(e){
+  e.preventDefault();
+  synth?.dispose()
+  drone?.dispose()
+  Tone.Transport.cancel()
+  Tone.Transport.stop()
+}
 
 function playNoteSequence(hash) {
   // This loops through the hash notes. Plays one note at a time.
