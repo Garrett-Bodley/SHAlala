@@ -226,9 +226,7 @@ const MAJORPENTA = {
   f: "C6"
 }
 
-const NOTE_LENGTHS = {
-
-}
+const NOTE_DURATIONS = ['4n.', '4n', '4t', '8n.', '8n', '8t', '16n.', '16n', '16t', '32n.', '32n', '32t']
 
 const SCALES = {
   ionian: IONIAN,
@@ -292,7 +290,8 @@ async function handleOnSubmit(e) {
   const scaleToPlay = document.getElementById("scaleSelect").value
 
   const hashToPlay = playShortHash ? hash.slice(0, 8) : hash;
-  const notes = hashToNotes(hashToPlay, scaleToPlay)
+  // const notes = hashToNotes(hashToPlay, scaleToPlay)
+  const notes = hashToNotesWithTempo(hashToPlay, scaleToPlay)
 
   playNotePart(notes)
   // const notes = [...hashToPlay].map((char, charIdx) => {
@@ -337,6 +336,12 @@ function hashToNotes(hash, scale) {
   return hash.split("").map((char) => SCALES[scale][char]);
 }
 
+function hashToNotesWithTempo(hash, scale) {
+  return hash.split("").map((char) => {
+    return { note: SCALES[scale][char], duration: NOTE_DURATIONS[Number(`0x${char}`) % NOTE_DURATIONS.length] }
+  })
+}
+
 function playNotePart(notes) {
   // This plays the hash once and then stops. It works!
   // No Chords
@@ -348,18 +353,24 @@ function playNotePart(notes) {
   drone = new Tone.PolySynth(Tone.Synth).toDestination();
 
   let startTime = 0;
-  let duration = '8t'
 
-  drone.triggerAttackRelease(['C2', 'C3'], Tone.Time(duration) * notes.length);
-  notes.forEach((note, index) => {
+  const totalDuration = notes.reduce((accum, note) => {
+    return accum + Tone.Time(note.duration)
+  }, 0)
+  console.log({totalDuration})
+
+  drone.triggerAttackRelease(['C2', 'C3'], totalDuration);
+  notes.forEach((note) => {
     Tone.Transport.scheduleOnce(time => {
-      synth.triggerAttackRelease(note, duration, time)
+      synth.triggerAttackRelease(note.note, note.duration, time)
     }, startTime);
-    startTime += Tone.Time(duration).toSeconds();
+    startTime += Tone.Time(note.duration).toSeconds();
   })
 
   Tone.Transport.start();
 }
+
+
 
 function playNoteSequence(hash) {
   // This loops through the hash notes. Plays one note at a time.
