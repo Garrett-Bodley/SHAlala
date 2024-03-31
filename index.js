@@ -1,4 +1,4 @@
-CHROMATIC = {
+const CHROMATIC = {
   0: "C4",
   1: "Db4",
   2: "D4",
@@ -14,7 +14,7 @@ CHROMATIC = {
   c: "C5",
   d: "Db5",
   e: "D6",
-  f: "Eb6",
+  f: "Eb6"
 };
 
 const IONIAN = {
@@ -33,7 +33,7 @@ const IONIAN = {
   c: "A5",
   d: "B5",
   e: "C6",
-  f: "D6",
+  f: "D6"
 };
 
 const DORIAN = {
@@ -52,7 +52,7 @@ const DORIAN = {
   c: "A5",
   d: "Bb5",
   e: "C6",
-  f: "D6",
+  f: "D6"
 };
 
 const PHRYGIAN = {
@@ -71,7 +71,7 @@ const PHRYGIAN = {
   c: "Ab5",
   d: "Bb5",
   e: "C6",
-  f: "D6",
+  f: "D6"
 };
 
 const LYDIAN = {
@@ -90,7 +90,7 @@ const LYDIAN = {
   c: "A5",
   d: "B5",
   e: "C6",
-  f: "D6",
+  f: "D6"
 };
 
 const MIXOLYDIAN = {
@@ -109,7 +109,7 @@ const MIXOLYDIAN = {
   c: "A5",
   d: "Bb5",
   e: "C6",
-  f: "D6",
+  f: "D6"
 };
 
 const AEOLIAN = {
@@ -128,7 +128,7 @@ const AEOLIAN = {
   c: "Ab5",
   d: "Bb5",
   e: "C6",
-  f: "D6",
+  f: "D6"
 };
 
 const LOCRIAN = {
@@ -147,10 +147,103 @@ const LOCRIAN = {
   c: "Ab5",
   d: "Bb5",
   e: "C6",
-  f: "Db6",
+  f: "Db6"
 };
 
-const MODES = [IONIAN, DORIAN, PHRYGIAN, LYDIAN, MIXOLYDIAN, AEOLIAN, LOCRIAN];
+const DIMINISHED = {
+  0: "C4",
+  1: "D4",
+  2: "Eb4",
+  3: "F4",
+  4: "Gb4",
+  5: "Ab4",
+  6: "A4",
+  7: "B4",
+  8: "C5",
+  9: "D5",
+  a: "Eb5",
+  b: "F5",
+  c: "Gb5",
+  d: "Ab5",
+  e: "A5",
+  f: "B5"
+}
+
+const WHOLETONE = {
+  0: "C4",
+  1: "D4",
+  2: "E4",
+  3: "Gb4",
+  4: "Ab4",
+  5: "Bb4",
+  6: "C5",
+  7: "D5",
+  8: "E5",
+  9: "Gb5",
+  a: "Ab5",
+  b: "Bb5",
+  c: "C6",
+  d: "D6",
+  e: "E6",
+  f: "Gb6"
+}
+
+const MINORPENTA = {
+  0: "C3",
+  1: "Eb3",
+  2: "F3",
+  3: "G3",
+  4: "Bb3",
+  5: "C4",
+  6: "Eb4",
+  7: "F4",
+  8: "G4",
+  9: "Bb4",
+  a: "C5",
+  b: "Eb5",
+  c: "F5",
+  d: "G5",
+  e: "Bb5",
+  f: "C6"
+}
+
+const MAJORPENTA = {
+  0: "C3",
+  1: "D3",
+  2: "E3",
+  3: "G3",
+  4: "A3",
+  5: "C4",
+  6: "D4",
+  7: "E4",
+  8: "G4",
+  9: "A4",
+  a: "C5",
+  b: "D5",
+  c: "E5",
+  d: "G5",
+  e: "A5",
+  f: "C6"
+}
+
+const NOTE_LENGTHS = {
+
+}
+
+const SCALES = {
+  ionian: IONIAN,
+  dorian: DORIAN,
+  phrygian: PHRYGIAN,
+  lydian: LYDIAN,
+  mixolydian: MIXOLYDIAN,
+  aeolian: AEOLIAN,
+  locrian: LOCRIAN,
+  chromatic: CHROMATIC,
+  diminished: DIMINISHED,
+  wholetone: WHOLETONE,
+  minorpenta: MINORPENTA,
+  majorpenta: MAJORPENTA
+}
 
 let toneStart = false;
 let synth;
@@ -170,7 +263,7 @@ async function initTone() {
   toneStart = true;
   await Tone.start();
   Tone.Destination.volume.value = parseFloat(-20);
-  Tone.Transport.bpm.value = 200;
+  Tone.Transport.bpm.value = 180;
 }
 
 async function handleRangeOnInput(e) {
@@ -178,10 +271,9 @@ async function handleRangeOnInput(e) {
   if (toneStart == false) await initTone();
 
   let newRangeValue = e.target.value;
-  document.getElementById("range-value").innerText = newRangeValue;
-  // Tone.Transport.bpm.value = newRangeValue;
+  document.getElementById("range-value").innerText = `${newRangeValue} BPM`;
   Tone.Transport.bpm.rampTo(newRangeValue, 0.1);
-  console.log({ newRangeValue });
+  // console.log({ newRangeValue });
 }
 
 async function handleOnSubmit(e) {
@@ -194,33 +286,36 @@ async function handleOnSubmit(e) {
   console.log({ hash });
   document.getElementById("sha").textContent = "SHA1 Hash: " + hash;
 
-  const synth = new Tone.Synth().toDestination();
+  // const synth = new Tone.Synth().toDestination();
 
   const playShortHash = document.getElementById("playShortHashCheckbox").checked;
+  const scaleToPlay = document.getElementById("scaleSelect").value
 
   const hashToPlay = playShortHash ? hash.slice(0, 8) : hash;
+  const notes = hashToNotes(hashToPlay, scaleToPlay)
 
-  const notes = [...hashToPlay].map((char, charIdx) => {
-    let timing;
-    if (charIdx === 0) {
-      timing = 0;
-    } else if(charIdx === hashToPlay.length - 1) {
-      timing = 0.05
-    } else {
-      // use a floor so that values are never 0
-      timing = Math.max(0.001, Number(`0x${hashToPlay[charIdx+1]}`) / 48);
-    }
-    return { pitch: DORIAN[char], timing }
-  });
+  playNotePart(notes)
+  // const notes = [...hashToPlay].map((char, charIdx) => {
+  //   let timing;
+  //   if (charIdx === 0) {
+  //     timing = 0;
+  //   } else if(charIdx === hashToPlay.length - 1) {
+  //     timing = 0.05
+  //   } else {
+  //     // use a floor so that values are never 0
+  //     timing = Math.max(0.001, Number(`0x${hashToPlay[charIdx+1]}`) / 48);
+  //   }
+  //   return { pitch: DORIAN[char], timing }
+  // });
 
-  function play() {
-      let delay = Tone.now();
-      for(let i = 0; i < notes.length; i++) {
-          delay += notes[i].timing;
-          synth.triggerAttackRelease(notes[i].pitch, '8n', delay);
-      }
-  }
-  play();
+  // function play() {
+  //     let delay = Tone.now();
+  //     for(let i = 0; i < notes.length; i++) {
+  //         delay += notes[i].timing;
+  //         synth.triggerAttackRelease(notes[i].pitch, '8n', delay);
+  //     }
+  // }
+  // play();
 
   return;
 
@@ -237,34 +332,32 @@ async function computeSHA1(text) {
   return hashHex;
 }
 
-function hashToNotes(hash) {
-  return hash.split("").map((char) => DORIAN[char]);
-  // return hash.split("").map((char) => MODES[Math.floor(Math.random() * MODES.length)][char])
+function hashToNotes(hash, scale) {
+  console.log( {scale} )
+  return hash.split("").map((char) => SCALES[scale][char]);
 }
 
-function playNotePart(hash) {
+function playNotePart(notes) {
   // This plays the hash once and then stops. It works!
   // No Chords
   console.log('playNotePart')
-  const notes = hashToNotes(hash);
-  if (synth) synth.dispose();
-  if (drone) drone.dispose();
+
+  Tone.Transport.stop();
+  Tone.Transport.cancel(0);
   synth = new Tone.PolySynth(Tone.Synth).toDestination();
   drone = new Tone.PolySynth(Tone.Synth).toDestination();
-  Tone.Transport.stop();
-  Tone.Transport.clear(0);
 
   let startTime = 0;
   let duration = '8t'
 
-  notes.forEach(note => {
+  drone.triggerAttackRelease(['C2', 'C3'], Tone.Time(duration) * notes.length);
+  notes.forEach((note, index) => {
     Tone.Transport.scheduleOnce(time => {
       synth.triggerAttackRelease(note, duration, time)
     }, startTime);
     startTime += Tone.Time(duration).toSeconds();
   })
 
-  drone.triggerAttack(['C2', 'C3'], Tone.now());
   Tone.Transport.start();
 }
 
