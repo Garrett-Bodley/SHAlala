@@ -24,6 +24,10 @@
         -ms-user-select: none;
         user-select: none;
       }
+
+      div {
+        padding-top: 5px;
+      }
     </style>
   </head>
 
@@ -34,23 +38,23 @@
 
       <form id="form">
         <div>
-          <label for="form-input">Text Input:</label>
-          <input id="form-input" type="text" placeholder="enter text here" /><br/>
+          Text and File inputs are concatenated when generating the SHA1
         </div>
         <div>
-          <label for="file-input" style="padding-top: 5px">Upload a file (Does not get sent to a server):</label>
-          <input id="fileInput" type="file" style="padding-top: 5px"/>
+          <label for="form-input">Text Input:</label>
+          <input id="form-input" type="text" placeholder="enter text here" />
         </div>
-        <div style="margin-top:10px;">
+        <div>
+          <label for="file-input">Upload a file (Does not get sent to a server):</label>
+          <input id="fileInput" type="file" style="padding-top: 5px"/>
+          <button type="button" id="clearFile">X</button>
+        </div>
+        <div>
           tempo:<br/>
           <input id="range-input" value="200" type="range" min="60" max="240" />
           <span id="range-value">180 BPM</span>
-        </div>
-        <div>
-          <input type="checkbox" checked="true" id="playShortHashCheckbox" />
-          <label for="playShortHashCheckbox">play the short hash</label>
-        </div>
-        <div style="margin-top:10px">
+        </div><hr/>
+        <div style="margin-top:10px;">
           <label for="scaleSelect">Select a scale:</label>
           <select id="scaleSelect">
             <option value="ionian">Ionian</option>
@@ -66,8 +70,10 @@
             <option value="minorpenta">Minor Pentatonic</option>
             <option value="majorpenta">Major Pentatonic</option>
           </select>
+          <input type="checkbox" checked="true" id="playShortHashCheckbox" />
+          <label for="playShortHashCheckbox">play the short hash</label>
         </div>
-        <button style="margin-top: 10px">SHAlala</button>
+        <button type="submit" style="margin-top: 10px">SHAlala</button>
         <button id="stop">stop</button>
         <div id="sha"></div>
         <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>

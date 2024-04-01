@@ -262,6 +262,7 @@ document.addEventListener("DOMContentLoaded", (_e) => {
     .getElementById("range-input")
     .addEventListener("input", handleRangeOnInput);
   document.getElementById('stop').addEventListener('click', stopSound);
+  document.getElementById('clearFile').addEventListener('click', clearFile);
 });
 
 async function initTone() {
@@ -345,6 +346,14 @@ async function readFileAsBuffer(file){
     reader.onerror = () => reject(reader.error);
     reader.readAsArrayBuffer(file);
   })
+}
+
+function clearFile(e){
+  console.log(e)
+  console.log(e.target)
+  e.preventDefault();
+  const inputFile = document.getElementById("fileInput")
+  inputFile.value = ''
 }
 
 function concatBuffers(buf1, buf2){
@@ -485,7 +494,7 @@ function playChordPart(hash) {
 }
 
 function makeChordsFromNotes(notes, voiceCount) {
-  chords = []
+  const chords = []
   for(let i = 0; i < notes.length; i += voiceCount) {
     chords.push(notes.slice(i, Math.max(i + voiceCount, notes.length - 1)))
   }
