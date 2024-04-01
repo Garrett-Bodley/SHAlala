@@ -267,7 +267,7 @@ document.addEventListener("DOMContentLoaded", (_e) => {
 async function initTone() {
   toneStart = true;
   await Tone.start();
-  Tone.Destination.volume.value = parseFloat(-20);
+  Tone.Destination.volume.value = parseFloat(-3);
   Tone.Transport.bpm.value = 180;
 }
 
