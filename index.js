@@ -263,6 +263,9 @@ document.addEventListener("DOMContentLoaded", (_e) => {
     .addEventListener("input", handleRangeOnInput);
   document.getElementById('stop').addEventListener('click', stopSound);
   document.getElementById('clearFile').addEventListener('click', clearFile);
+  document.getElementById('githubInput').addEventListener('keydown', handleGithubSubmit)
+  document.getElementById('githubInputButton').addEventListener('click', handleGithubClick)
+  document.getElementById('githubClearButton').addEventListener('click', handleGithubClearClick)
 });
 
 async function initTone() {
@@ -286,9 +289,15 @@ async function handleOnSubmit(e) {
   e.preventDefault();
   if (toneStart == false) await initTone();
 
-  const inputText = document.getElementById("form-input").value;
+  const gitSHA = document.getElementById('githubSHA')
+  const inputText = document.getElementById("formInput").value;
   const inputFile = document.getElementById("fileInput").files[0]
-  const hash = await computeSHA1(inputText, inputFile)
+  let hash;
+  if(gitSHA){
+    hash = gitSHA.getAttribute('data-SHA')
+  }else{
+    hash = await computeSHA1(inputText, inputFile)
+  }
 
   console.log({ hash });
   document.getElementById("sha").textContent = "SHA1 Hash: " + hash;
@@ -499,6 +508,135 @@ function makeChordsFromNotes(notes, voiceCount) {
     chords.push(notes.slice(i, Math.max(i + voiceCount, notes.length - 1)))
   }
   return chords
+}
+
+async function handleGithubSubmit(e){
+  if(e.key != 'Enter') return
+  e.preventDefault();
+
+  document.getElementById('formInput').value = ''
+  document.getElementById('fileInput').value = ''
+  await getCommits()
+}
+
+async function handleGithubClick(e){
+  document.getElementById('formInput').value = ''
+  document.getElementById('fileInput').value = ''
+  await getCommits()
+}
+
+async function getCommits(){
+  const resultsDiv = document.getElementById('githubResults')
+  while(resultsDiv.firstChild) resultsDiv.removeChild(resultsDiv.firstChild)
+  const inputVal = document.getElementById('githubInput').value
+
+  const parsedURL = parseURL(inputVal)
+  console.log({parsedURL})
+
+  if(!parsedURL || parsedURL.host != 'github.com'){
+    showGitURLError(inputVal, resultsDiv)
+    return
+  }
+
+  const apiUrl = `https://api.github.com/repos${parsedURL.pathname}/commits`
+  const commit = await getGithubAPI(apiUrl, inputVal)
+
+  displayCommit(commit)
+}
+
+function showGitURLError(inputURL){
+  const resultsDiv = document.getElementById('githubResults')
+  const errorP = document.createElement('p');
+  errorP.innerText = `Error: "${inputURL}" is not a valid Github URL`
+  errorP.style = 'color: red;'
+  resultsDiv.appendChild(errorP);
+}
+
+function protocolCheck(string){
+  if(string.slice(0, 7) == 'http://') return string
+  if(string.slice(0, 8) == 'https://') return string
+  return `https://${string}`
+}
+
+function displayCommit(commit){
+  const githubResults = document.getElementById('githubResults');
+  const toAppend = []
+
+  const commitDiv = document.createElement('div')
+  commitDiv.innerText = `commit ${commit.sha}`
+  commitDiv.id = 'githubSHA'
+  commitDiv.setAttribute('data-SHA', commit.sha)
+  toAppend.push(commitDiv)
+
+  const authorDiv = document.createElement('div')
+  authorDiv.innerText = `Author: ${commit.commit.author.name} <${commit.commit.author.email}>`
+  toAppend.push(authorDiv)
+
+  const dateDiv = document.createElement('div')
+  dateDiv.innerText = `Date:   ${ISOToGitLogFormat(commit.commit.author.date)}`
+  toAppend.push(dateDiv)
+
+
+  const message = commit.commit.message.split("\n")[0].slice(0, 50)
+  const messageDiv = document.createElement('div')
+  const br1 = document.createElement('br')
+  const br2 = document.createElement('br')
+  messageDiv.appendChild(br1)
+  messageDiv.innerText = message
+  messageDiv.appendChild(br2)
+  toAppend.push(messageDiv)
+
+  toAppend.forEach(el => githubResults.appendChild(el))
+}
+
+function ISOToGitLogFormat(dateString){
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const date = new Date(dateString);
+
+  const dayOfWeek = days[date.getDay()];
+  const month = months[date.getMonth()];
+  const day = date.getDate();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const year = date.getFullYear();
+
+  // Calculate the timezone offset dynamically
+  const tzOffset = -date.getTimezoneOffset();
+  const tzHours = String(Math.floor(Math.abs(tzOffset) / 60)).padStart(2, '0');
+  const tzMinutes = String(Math.abs(tzOffset) % 60).padStart(2, '0');
+  const timezone = `${tzOffset < 0 ? '-' : '+'}${tzHours}${tzMinutes}`;
+
+  return `${dayOfWeek} ${month} ${day} ${hours}:${minutes}:${seconds} ${year} ${timezone}`;
+}
+
+function parseURL(url){
+  const urlWithProtocol = protocolCheck(url);
+  console.log({urlWithProtocol})
+  try{
+    return new URL(urlWithProtocol)
+  }catch{
+    return
+  }
+}
+
+async function getGithubAPI(url, inputVal){
+  // For now this just returns the most recent commit of the provided repo
+  const response = await fetch(url)
+  if(!response.ok) { showGitURLError(inputVal); return }
+  console.log(response.body)
+  const data = await response.json()
+  console.log({data})
+  return data[0]
+}
+
+function handleGithubClearClick(e){
+  e.preventDefault()
+  const githubResults = document.getElementById('githubResults')
+  while(githubResults.firstChild) githubResults.removeChild(githubResults.firstChild)
+  // githubResults.innerText
 }
 
 // // Maybe deprecating? Idk if this is good for anything

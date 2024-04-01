@@ -41,11 +41,11 @@
           Text and File inputs are concatenated when generating the SHA1
         </div>
         <div>
-          <label for="form-input">Text Input:</label>
-          <input id="form-input" type="text" placeholder="enter text here" />
+          <label for="formInput">Text Input:</label>
+          <input id="formInput" type="text" placeholder="enter text here" />
         </div>
         <div>
-          <label for="file-input">Upload a file (Does not get sent to a server):</label>
+          <label for="fileInput">Upload a file (Does not get sent to a server):</label>
           <input id="fileInput" type="file" style="padding-top: 5px"/>
           <button type="button" id="clearFile">X</button>
         </div>
@@ -53,7 +53,23 @@
           tempo:<br/>
           <input id="range-input" value="200" type="range" min="60" max="240" />
           <span id="range-value">180 BPM</span>
-        </div><hr/>
+        </div>
+        <hr/>
+        <div>
+          <h2>Load a Github Repo</h2>
+          <div>
+            <p style="margin:0">Grabs the most recent commit of the Github Repo</p>
+            <p style="margin:0">Text/File input are ignored if a repo has been specified</p>
+            <div>
+              <label for="githubInput">Github URL: </label>
+              <input id="githubInput" type="text" placeholder="https://github.com/UserName/Repository" style="width:50%">
+              <button id="githubInputButton" type="button">Load</button>
+              <button id="githubClearButton" type="button">X</button>
+            </div>
+          </div>
+          <div id="githubResults"></div>
+        </div>
+        <hr/>
         <div style="margin-top:10px;">
           <label for="scaleSelect">Select a scale:</label>
           <select id="scaleSelect">
@@ -76,12 +92,12 @@
         <button type="submit" style="margin-top: 10px">SHAlala</button>
         <button id="stop">stop</button>
         <div id="sha"></div>
-        <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
-        <script type="module" src="/index.js"></script>
       </form>
 
       <hr style="margin-top:30px;">
       <a href="https://github.com/Garrett-Bodley/SHAlala">Source code</a>
     </div>
+    <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
+    <script type="module" src="/index.js"></script>
   </body>
 </html>
