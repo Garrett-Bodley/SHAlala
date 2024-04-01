@@ -362,9 +362,11 @@ function hashToNotes(hash, scale) {
 }
 
 function hashToNotesWithTempo(hash, scale) {
+  const prevBPM = Tone.Transport.bpm.value
+  Tone.Transport.bpm.value = 180
   let totalDuration = 0
   let currentDuration
-  return hash.split("").map((char, idx) => {
+  const notes = hash.split("").map((char, idx) => {
     if (idx == 0){
       currentDuration = NOTE_DURATIONS[Number(`0x${char}`) % NOTE_DURATIONS.length]
     }else{
@@ -373,13 +375,15 @@ function hashToNotesWithTempo(hash, scale) {
     totalDuration += Tone.Time(currentDuration)
     return { note: SCALES[scale][char], duration: currentDuration }
   })
+  Tone.Transport.bpm.value = prevBPM
+  return notes
 }
 
 function playNotePart(notes) {
   // This plays the hash once and then stops. It works!
   // No Chords
   console.log('playNotePart')
-
+  console.log({notes})
   Tone.Transport.stop();
   Tone.Transport.cancel(0);
   synth?.dispose();
