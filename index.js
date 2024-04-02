@@ -634,6 +634,7 @@ async function getGithubAPI(url, inputVal){
 function handleGithubClearClick(e){
   e.preventDefault()
   const githubResults = document.getElementById('githubResults')
+  document.getElementById('githubInput').value = ''
   while(githubResults.firstChild) githubResults.removeChild(githubResults.firstChild)
   // githubResults.innerText
 }
