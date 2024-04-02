@@ -537,10 +537,17 @@ async function getCommits(){
     return
   }
 
-  const apiUrl = `https://api.github.com/repos${parsedURL.pathname}/commits`
+  const apiUrl = `https://api.github.com/repos${removeTrailingSlashes(parsedURL.pathname)}/commits`
+  console.log({apiUrl})
   const commit = await getGithubAPI(apiUrl, inputVal)
 
   displayCommit(commit)
+}
+
+function removeTrailingSlashes(urlString){
+  let res = urlString
+  while(res[res.length - 1] === '/'){ res = res.slice(0, res.length - 1)}
+  return res
 }
 
 function showGitURLError(inputURL){
