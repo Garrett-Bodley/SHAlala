@@ -226,12 +226,31 @@ const MAJORPENTA = {
   f: "Ab5"
 }
 
+const MCCOY = {
+  0: ['C2', 'G2'],
+  1: ['Eb2', 'A2', 'D3', 'G3', 'C4'],
+  2: ['G2', 'C3', 'F3', 'Bb3', 'Eb4'],
+  3: ['A2', 'D3', 'G3', 'C4', 'F4'],
+  4: ['C3', 'F3', 'Bb3', 'Eb4', 'G4'],
+  5: ['D3', 'G3', 'C4', 'F4', 'A4'],
+  6: ['Eb3', 'A3', 'D4', 'G4', 'C5'],
+  7: ['G3', 'C4', 'F4', 'Bb4', 'Eb5'],
+  8: ['A3', 'D4', 'G4', 'C5', 'F5'],
+  9: ['C4', 'F4', 'Bb4', 'Eb5', 'G5'],
+  a: ['D4', 'G4', 'C5', 'F5', 'A5'],
+  b: ['Eb4', 'A4', 'D5', 'G5', 'C6'],
+  c: ['G4', 'C5', 'F5', 'Bb5', 'Eb6'],
+  d: '',
+  e: '',
+  f: '',
+}
+
 // const NOTE_DURATIONS = ['4n', '4t', '8n', '8t', '16n', '16t', '32n', '32t']
 // const NOTE_DURATIONS = ['4n', '4t', '8n.', '8n', '8t', '16n.', '16n']
 // const NOTE_DURATIONS = ['4n', '4t', '8n', '8t', '16n', '16t', '32n', '32t'].sort(() => Math.random() - 0.5);
 // const NOTE_DURATIONS = ['4n', '4t', '8n', '8t', '16n', '16t', '32n', '32t'].sort(() => Math.random() - 0.5);
 // const NOTE_DURATIONS = ['4t', '8n', '16t', '16n', '8t', '32t', '4n', '32n'] // Randomized order using line above
-const NOTE_DURATIONS = ['4n.', '4n', '4t', '8n.', '8n', '8t', '16n.', '16n']
+const NOTE_DURATIONS = ['4n.', '4n', '4t', '4t', '4t', '8n', '8n', '8n', '4n.']
 
 // All rhythm options excluding anything >= half note triplet
 // const NOTE_DURATIONS = ['4n.', '4n', '4t', '8n.', '8n', '8t', '16n.', '16n', '16t', '32n.', '32n', '32t']
@@ -248,7 +267,8 @@ const SCALES = {
   diminished: DIMINISHED,
   wholetone: WHOLETONE,
   minorpenta: MINORPENTA,
-  majorpenta: MAJORPENTA
+  majorpenta: MAJORPENTA,
+  mccoy: MCCOY
 }
 
 let toneStart = false;
@@ -399,9 +419,11 @@ function playNotePart(notes) {
   }, totalDuration)
 
   notes.forEach((note) => {
-    Tone.Transport.scheduleOnce(time => {
-      synth.triggerAttackRelease(note.note, note.duration, time)
-    }, startTime);
+    if (note.note !== ''){
+      Tone.Transport.scheduleOnce(time => {
+        synth.triggerAttackRelease(note.note, note.duration, time)
+      }, startTime);
+    }
     startTime += Tone.Time(note.duration).toSeconds();
   })
 
