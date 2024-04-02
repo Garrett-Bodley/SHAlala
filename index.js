@@ -124,7 +124,7 @@ const AEOLIAN = {
   8: "Bb4",
   9: "Cb4",
   a: "Db5",
-  b: "Gb5",
+  b: "Eb5",
   c: "Fb5",
   d: "Gb5",
   e: "Ab5",
@@ -266,13 +266,15 @@ document.addEventListener("DOMContentLoaded", (_e) => {
   document.getElementById('githubInput').addEventListener('keydown', handleGithubSubmit)
   document.getElementById('githubInputButton').addEventListener('click', handleGithubClick)
   document.getElementById('githubClearButton').addEventListener('click', handleGithubClearClick)
+  document.getElementById('hashInput').addEventListener('keydown', handleHashInputKeydown)
+  document.getElementById('hashInputClear').addEventListener('click', handleHashInputClear)
 });
 
 async function initTone() {
   toneStart = true;
   await Tone.start();
   Tone.Destination.volume.value = parseFloat(-3);
-  Tone.Transport.bpm.value = 180;
+  Tone.Transport.bpm.value = 180;.5
 }
 
 async function handleRangeOnInput(e) {
@@ -293,46 +295,21 @@ async function handleOnSubmit(e) {
   const inputText = document.getElementById("formInput").value;
   const inputFile = document.getElementById("fileInput").files[0]
   let hash;
-  if(gitSHA){
+  if(checkHashInput()){
+    console.log('hashInput')
+    hash = document.getElementById('hashInput').value
+  }else if(gitSHA){
+    console.log('gitSHA')
     hash = gitSHA.getAttribute('data-SHA')
   }else{
+    console.log('computeSHA')
     hash = await computeSHA1(inputText, inputFile)
   }
 
   console.log({ hash });
   document.getElementById("sha").textContent = "SHA1 Hash: " + hash;
 
-  // const synth = new Tone.Synth().toDestination();
-
-  const playShortHash = document.getElementById("playShortHashCheckbox").checked;
-  const scaleToPlay = document.getElementById("scaleSelect").value
-
-  const hashToPlay = playShortHash ? hash.slice(0, 8) : hash;
-  // const notes = hashToNotes(hashToPlay, scaleToPlay)
-  const notes = hashToNotesWithTempo(hashToPlay, scaleToPlay)
-
-  playNotePart(notes)
-  // const notes = [...hashToPlay].map((char, charIdx) => {
-  //   let timing;
-  //   if (charIdx === 0) {
-  //     timing = 0;
-  //   } else if(charIdx === hashToPlay.length - 1) {
-  //     timing = 0.05
-  //   } else {
-  //     // use a floor so that values are never 0
-  //     timing = Math.max(0.001, Number(`0x${hashToPlay[charIdx+1]}`) / 48);
-  //   }
-  //   return { pitch: DORIAN[char], timing }
-  // });
-
-  // function play() {
-  //     let delay = Tone.now();
-  //     for(let i = 0; i < notes.length; i++) {
-  //         delay += notes[i].timing;
-  //         synth.triggerAttackRelease(notes[i].pitch, '8n', delay);
-  //     }
-  // }
-  // play();
+  playHash(hash)
 }
 
 async function computeSHA1(text, file) {
@@ -519,7 +496,7 @@ async function handleGithubSubmit(e){
   await getCommits()
 }
 
-async function handleGithubClick(e){
+async function handleGithubClick(){
   document.getElementById('formInput').value = ''
   document.getElementById('fileInput').value = ''
   await getCommits()
@@ -639,10 +616,51 @@ function handleGithubClearClick(e){
   // githubResults.innerText
 }
 
-// // Maybe deprecating? Idk if this is good for anything
-// function playChords(time, chords, synth) {
-//   chords.forEach((chord, index) => {
-//     const startTime = time + index * Tone.Time("4n").toSeconds();
-//     synth.triggerAttackRelease(chord, "4n", startTime);
-//   });
-// }
+function handleHashInputKeydown(e){
+  if(e.key != 'Enter') return
+  e.preventDefault();
+  if(checkHashInput()){
+    if(e.target.value.length != 40){
+      document.getElementById('sha').innerText = `You found the Easter Egg!\n Hex Sequence: ${e.target.value}`
+    }else{
+      document.getElementById('sha').innerText = `SHA1 Hash: ${e.target.value}`
+    }
+    playHash(e.target.value)
+  }
+}
+
+function checkHashInput(){
+  document.getElementById('hashInputError').innerText = '' // clear error div
+  const hashInput = document.getElementById('hashInput').value
+  if(hashInput.length == 0) return false
+  // was originally going to enforce 40 || 7 char strings, but maybe any hex val is okay?
+  if(!isHex(hashInput)){
+    displayHashInputError(hashInput);
+    return false;
+  }
+  return true
+}
+
+function isHex(string){
+  const hexRegex = /^[0-9a-fA-F]+$/
+  return hexRegex.test(string)
+}
+
+function displayHashInputError(inputString){
+  const errorDiv = document.getElementById('hashInputError')
+  errorDiv.innerText = `"${inputString}" is not a valid hash`
+}
+
+function playHash(hash){
+  const playShortHash = document.getElementById("playShortHashCheckbox").checked;
+  const scaleToPlay = document.getElementById("scaleSelect").value
+  const hashToPlay = playShortHash ? hash.slice(0, 8) : hash;
+  const notes = hashToNotesWithTempo(hashToPlay, scaleToPlay)
+
+  playNotePart(notes)
+}
+
+function handleHashInputClear(e){
+  e.preventDefault();
+  document.getElementById('hashInput').value = ''
+}

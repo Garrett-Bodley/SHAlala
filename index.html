@@ -37,29 +37,20 @@
       <h2>Turn Your SHA1 into Music If You Want to Do That For Some Reason</h2>
 
       <form id="form">
+        <h3>Provide a Hash</h3>
         <div>
-          Text and File inputs are concatenated when generating the SHA1
+          <label for="hashInput">Hash input:</label>
+          <input id="hashInput" placeholder="enter SHA1 here" type="text">
+          <button type="button" id="hashInputClear">X</button>
+          <br>
+          <p style="margin: 0; font-size: .8em;">(All other inputs are ignored when this is used)</p>
+          <div id="hashInputError" style="color:red"></div>
         </div>
         <div>
-          <label for="formInput">Text Input:</label>
-          <input id="formInput" type="text" placeholder="enter text here" />
-        </div>
-        <div>
-          <label for="fileInput">Upload a file (Does not get sent to a server):</label>
-          <input id="fileInput" type="file" style="padding-top: 5px"/>
-          <button type="button" id="clearFile">X</button>
-        </div>
-        <div>
-          tempo:<br/>
-          <input id="range-input" value="200" type="range" min="60" max="240" />
-          <span id="range-value">180 BPM</span>
-        </div>
-        <hr/>
-        <div>
-          <h2>Load a Github Repo</h2>
+          <h3>Load a Github Repo</h3>
           <div>
             <p style="margin:0">Grabs the most recent commit of the Github Repo</p>
-            <p style="margin:0">Text/File input are ignored if a repo has been specified</p>
+            <p style="margin: 0; font-size: .8em">(Text/File input are ignored if a repo has been specified)</p>
             <div>
               <label for="githubInput">Github URL: </label>
               <input id="githubInput" type="text" placeholder="https://github.com/UserName/Repository" style="width:50%">
@@ -70,7 +61,23 @@
           <div id="githubResults"></div>
         </div>
         <hr/>
+        <h3>Generate a Hash</h3>
+        <p style="margin: 0px">
+          Text and File inputs are concatenated when generating the SHA1
+        </p>
+        <div>
+          <label for="formInput">Text Input:</label>
+          <input id="formInput" type="text" placeholder="enter text here" />
+        </div>
+        <div>
+          <label for="fileInput">Upload a file (Does not get sent to a server):</label>
+          <input id="fileInput" type="file" style="padding-top: 5px"/>
+          <button type="button" id="clearFile">X</button>
+        </div>
+        <hr/>
+
         <div style="margin-top:10px;">
+          <h3>Configure</h3>
           <label for="scaleSelect">Select a scale:</label>
           <select id="scaleSelect">
             <option value="ionian">Ionian</option>
@@ -88,7 +95,13 @@
           </select>
           <input type="checkbox" checked="true" id="playShortHashCheckbox" />
           <label for="playShortHashCheckbox">play the short hash</label>
+          <div>
+            tempo:<br/>
+            <input id="range-input" value="200" type="range" min="60" max="240" />
+            <span id="range-value">180 BPM</span>
+          </div>
         </div>
+        <h3>Play</h3>
         <button type="submit" style="margin-top: 10px">SHAlala</button>
         <button id="stop">stop</button>
         <div id="sha"></div>
