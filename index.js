@@ -318,16 +318,22 @@ async function handleOnSubmit(e) {
   if(checkHashInput()){
     console.log('hashInput')
     hash = document.getElementById('hashInput').value
+    if(hash.length === 40){
+      document.getElementById("sha").textContent = "SHA1 Hash: " + hash;
+    }else{
+      document.getElementById('sha').innerText = `You found the Easter Egg!\n Hex Sequence: ${hash}`
+    }
   }else if(gitSHA){
     console.log('gitSHA')
     hash = gitSHA.getAttribute('data-SHA')
+    document.getElementById("sha").textContent = "SHA1 Hash: " + hash;
   }else{
     console.log('computeSHA')
     hash = await computeSHA1(inputText, inputFile)
+    document.getElementById("sha").textContent = "SHA1 Hash: " + hash;
   }
 
   console.log({ hash });
-  document.getElementById("sha").textContent = "SHA1 Hash: " + hash;
 
   playHash(hash)
 }
