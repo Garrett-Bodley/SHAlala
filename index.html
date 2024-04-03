@@ -4,40 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>SHAlala</title>
-    <style>
-      body {
-        line-height: 1.4;
-          font-size: 16px;
-          padding: 0 10px;
-          margin: 10px auto;
-          max-width: 650px;
-      }
-
-      #maincontent {
-        max-width:42em;margin:15 auto;
-      }
-
-      label {
-        /* make text not selectable to prevent selection when clicking a checkbox label */
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-      }
-
-      div {
-        padding-top: 5px;
-      }
-    </style>
   </head>
 
   <body>
+    <div id="root"></div>
     <div class="maincontent">
-      <h1>SHAlala</h1>
-      <h2>Turn Your SHA1 into Music If You Want to Do That For Some Reason</h2>
-
       <form id="form">
-        <h3>Provide a Hash</h3>
+        <!-- <h3>Provide a Hash</h3>
         <div>
           <label for="hashInput">Hash input:</label>
           <input id="hashInput" placeholder="enter SHA1 here" type="text">
@@ -45,8 +18,8 @@
           <br>
           <p style="margin: 0; font-size: .8em;">(All other inputs are ignored when this is used)</p>
           <div id="hashInputError" style="color:red"></div>
-        </div>
-        <div>
+        </div> -->
+        <!-- <div>
           <h3>Load a Github Repo</h3>
           <div>
             <p style="margin:0">Grabs the most recent commit of the Github Repo</p>
@@ -59,7 +32,7 @@
             </div>
           </div>
           <div id="githubResults"></div>
-        </div>
+        </div> -->
         <hr/>
         <h3>Generate a Hash</h3>
         <p style="margin: 0px">
@@ -92,7 +65,7 @@
             <option value="wholetone">Whole tone</option>
             <option value="minorpenta">Minor Pentatonic</option>
             <option value="majorpenta">Major Pentatonic</option>
-            <option value="mccoy">McCoy Tyner</option>
+            <option value="mccoy">McCoy Tyner (world's worst imitation)</option>
           </select>
           <input type="checkbox" checked="true" id="playShortHashCheckbox" />
           <label for="playShortHashCheckbox">play the short hash</label>
@@ -113,5 +86,6 @@
     </div>
     <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
     <script type="module" src="/index.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -389,7 +389,7 @@ function hashToNotesWithTempo(hash, scale) {
   let currentDuration
   const notes = hash.split("").map((char, idx) => {
     if (idx == 0){
-      currentDuration = NOTE_DURATIONS[Number(`0x${char}`) % NOTE_DURATIONS.length]
+      currentDuration = NOTE_DURATIONS[Number(`0x${hash}`) % NOTE_DURATIONS.length]
     }else{
       currentDuration = NOTE_DURATIONS[Math.round(totalDuration * 10) % NOTE_DURATIONS.length]
     }
@@ -548,6 +548,7 @@ async function getCommits(){
   const commit = await getGithubAPI(apiUrl, inputVal)
 
   displayCommit(commit)
+  playHash(commit.sha)
 }
 
 function removeTrailingSlashes(urlString){
