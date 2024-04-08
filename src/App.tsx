@@ -5,12 +5,15 @@ import HashInput from "./HashInput.tsx";
 import GithubInput from "./GithubInput.tsx";
 import StringFileInput from "./StringFileInput.tsx";
 import ToneProvider from "./utilities/ToneProvider.tsx";
+import ScaleSelect from "./ScaleSelect.tsx";
 
 function App() {
   const [hashInput, setHashInput] = useState<string>("");
   const [githubInput, setGithubInput] = useState<string>("");
   const [stringInput, setStringInput] = useState<string>("");
   const [fileInput, setFileInput] = useState<File | null>(null);
+  const [isChecked, setIsChecked] = useState<boolean>(true);
+  const [scale, setScale] = useState<string>('ionian')
 
   const handleHashInputOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     setHashInput(e.target.value);
@@ -45,6 +48,14 @@ function App() {
     setFileInput(null);
   }
 
+  const handleCheckedOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setIsChecked(e.target.checked);
+  }
+
+  const handleScaleOnChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setScale(e.target.value)
+  }
+
 
 
   return (
@@ -73,6 +84,12 @@ function App() {
           clearFileInput={clearFileInput}
           />
         <hr/>
+        <ScaleSelect
+          scale={scale}
+          handleScaleOnChange={handleScaleOnChange}
+          isChecked={isChecked}
+          handleCheckedOnChange={handleCheckedOnChange}
+        />
       </ToneProvider>
     </>
   );
