@@ -4,7 +4,6 @@ interface StringFileInputProps {
   stringInput: string;
   handleStringOnChange: (e: ChangeEvent<HTMLInputElement>) => void;
   clearStringInput: (e: MouseEvent<HTMLButtonElement>) => void;
-  fileInput: File | null;
   handleFileOnChange: (e: ChangeEvent<HTMLInputElement>) => void;
   clearFileInput: () => void;
 }
@@ -13,17 +12,15 @@ const StringFileInput: FC<StringFileInputProps> = ({
   stringInput,
   handleStringOnChange,
   clearStringInput,
-  fileInput,
   handleFileOnChange,
   clearFileInput,
 }) => {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
-    console.log('handleOnClick')
-    if(fileRef.current) fileRef.current.value = '';
+    if (fileRef.current) fileRef.current.value = "";
     clearFileInput();
-  }
+  };
 
   return (
     <>
@@ -32,7 +29,7 @@ const StringFileInput: FC<StringFileInputProps> = ({
         Text and File inputs are concatenated when generating the SHA1
       </p>
       <div>
-        <label htmlFor="formInput">Text Input:</label>
+        <label htmlFor="formInput">Text Input: </label>
         <input
           id="formInput"
           type="text"
@@ -40,7 +37,9 @@ const StringFileInput: FC<StringFileInputProps> = ({
           value={stringInput}
           onChange={handleStringOnChange}
         />
-        <button onClick={clearStringInput}>X</button>
+        <button onClick={clearStringInput} type="button">
+          X
+        </button>
       </div>
       <div>
         <label htmlFor="fileInput">
@@ -53,11 +52,7 @@ const StringFileInput: FC<StringFileInputProps> = ({
           ref={fileRef}
           onChange={handleFileOnChange}
         />
-        <button
-          type="button"
-          id="clearFile"
-          onClick={handleOnClick}
-        >
+        <button type="button" id="clearFile" onClick={handleOnClick}>
           X
         </button>
       </div>
