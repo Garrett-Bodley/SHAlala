@@ -6,6 +6,7 @@ import GithubInput from "./GithubInput.tsx";
 import StringFileInput from "./StringFileInput.tsx";
 import ToneProvider from "./utilities/ToneProvider.tsx";
 import ScaleSelect from "./ScaleSelect.tsx";
+import TempoInput from "./TempoInput.tsx";
 
 function App() {
   const [hashInput, setHashInput] = useState<string>("");
@@ -90,6 +91,7 @@ function App() {
           isChecked={isChecked}
           handleCheckedOnChange={handleCheckedOnChange}
         />
+        <TempoInput/>
       </ToneProvider>
     </>
   );
