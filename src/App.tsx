@@ -7,6 +7,7 @@ import StringFileInput from "./StringFileInput.tsx";
 import ToneProvider from "./utilities/ToneProvider.tsx";
 import ScaleSelect from "./ScaleSelect.tsx";
 import TempoInput from "./TempoInput.tsx";
+import Play from './Play.tsx'
 
 function App() {
   const [hashInput, setHashInput] = useState<string>("");
@@ -92,6 +93,7 @@ function App() {
           handleCheckedOnChange={handleCheckedOnChange}
         />
         <TempoInput/>
+        <Play/>
       </ToneProvider>
     </>
   );
