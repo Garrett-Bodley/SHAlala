@@ -276,19 +276,19 @@ let synth;
 let drone;
 let chordSynths = []
 
-document.addEventListener("DOMContentLoaded", (_e) => {
-  document.getElementById("form").addEventListener("submit", handleOnSubmit);
-  document
-    .getElementById("range-input")
-    .addEventListener("input", handleRangeOnInput);
-  document.getElementById('stop').addEventListener('click', stopSound);
-  document.getElementById('clearFile').addEventListener('click', clearFile);
-  document.getElementById('githubInput').addEventListener('keydown', handleGithubSubmit)
-  document.getElementById('githubInputButton').addEventListener('click', handleGithubClick)
-  document.getElementById('githubClearButton').addEventListener('click', handleGithubClearClick)
-  document.getElementById('hashInput').addEventListener('keydown', handleHashInputKeydown)
-  document.getElementById('hashInputClear').addEventListener('click', handleHashInputClear)
-});
+// document.addEventListener("DOMContentLoaded", (_e) => {
+//   document.getElementById("form").addEventListener("submit", handleOnSubmit);
+//   document
+//     .getElementById("range-input")
+//     .addEventListener("input", handleRangeOnInput);
+//   document.getElementById('stop').addEventListener('click', stopSound);
+//   document.getElementById('clearFile').addEventListener('click', clearFile);
+//   document.getElementById('githubInput').addEventListener('keydown', handleGithubSubmit)
+//   document.getElementById('githubInputButton').addEventListener('click', handleGithubClick)
+//   document.getElementById('githubClearButton').addEventListener('click', handleGithubClearClick)
+//   document.getElementById('hashInput').addEventListener('keydown', handleHashInputKeydown)
+//   document.getElementById('hashInputClear').addEventListener('click', handleHashInputClear)
+// });
 
 async function initTone() {
   toneStart = true;

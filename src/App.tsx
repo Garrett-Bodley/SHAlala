@@ -1,10 +1,9 @@
 import "./App.css";
-import { useState, ChangeEvent, MouseEvent } from "react";
+import { useState, ChangeEvent, MouseEvent, FormEvent } from "react";
 
 import HashInput from "./HashInput.tsx";
 import GithubInput from "./GithubInput.tsx";
 import StringFileInput from "./StringFileInput.tsx";
-import ToneProvider from "./utilities/ToneProvider.tsx";
 import ScaleSelect from "./ScaleSelect.tsx";
 import TempoInput from "./TempoInput.tsx";
 import Play from './Play.tsx'
@@ -40,6 +39,7 @@ function App() {
   };
 
   const clearStringInput = (_e: MouseEvent<HTMLButtonElement>) => {
+    console.log('clearing string')
     setStringInput("");
   };
 
@@ -60,13 +60,20 @@ function App() {
     setScale(e.target.value)
   }
 
+  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  }
+
+  const playHash = () => {
+
+  }
 
 
   return (
     <>
       <h1>SHAlala</h1>
       <h2>Turn Your SHA1 into Music If You Want to Do That For Some Reason</h2>
-      <ToneProvider>
+      <form onSubmit={handleFormSubmit}>
         <HashInput
           hashInput={hashInput}
           handleHashInputOnChange={handleHashInputOnChange}
@@ -83,21 +90,18 @@ function App() {
           stringInput={stringInput}
           handleStringOnChange={handleStringOnChange}
           clearStringInput={clearStringInput}
-          fileInput={fileInput}
           handleFileOnChange={handleFileOnChange}
           clearFileInput={clearFileInput}
           />
         <hr/>
         <ScaleSelect
-          scale={scale}
-          handleScaleOnChange={handleScaleOnChange}
           isChecked={isChecked}
           handleCheckedOnChange={handleCheckedOnChange}
         />
         <TempoInput/>
         <Play/>
         <ShowSHA hash={hash}/>
-      </ToneProvider>
+      </form>
     </>
   );
 }
