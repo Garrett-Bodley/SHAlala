@@ -275,6 +275,7 @@ let toneStart = false;
 let synth;
 let drone;
 let chordSynths = []
+let commits = [];
 
 document.addEventListener("DOMContentLoaded", (_e) => {
   document.getElementById("form").addEventListener("submit", handleOnSubmit);
@@ -558,9 +559,9 @@ async function getCommits(){
 
   const apiUrl = `https://api.github.com/repos${removeTrailingSlashes(parsedURL.pathname)}/commits`
   console.log({apiUrl})
-  const commit = await getGithubAPI(apiUrl, inputVal)
+  commits = await getGithubAPI(apiUrl, inputVal)
 
-  displayCommit(commit)
+  displayCommit(0)
 }
 
 function removeTrailingSlashes(urlString){
@@ -583,14 +584,17 @@ function protocolCheck(string){
   return `https://${string}`
 }
 
-function displayCommit(commit){
+function displayCommit(commitIdx){
+  clearGithubResults()
   const githubResults = document.getElementById('githubResults');
+  githubResults.data
   const toAppend = []
-
+  const commit = commits[commitIdx]
   const commitDiv = document.createElement('div')
   commitDiv.innerText = `commit ${commit.sha}`
   commitDiv.id = 'githubSHA'
   commitDiv.setAttribute('data-SHA', commit.sha)
+  commitDiv.setAttribute('data-idx', commitIdx)
   toAppend.push(commitDiv)
 
   const authorDiv = document.createElement('div')
@@ -605,13 +609,51 @@ function displayCommit(commit){
   const message = commit.commit.message.split("\n")[0].slice(0, 50)
   const messageDiv = document.createElement('div')
   const br1 = document.createElement('br')
-  const br2 = document.createElement('br')
   messageDiv.appendChild(br1)
+  const br2 = document.createElement('br')
   messageDiv.innerText = message
   messageDiv.appendChild(br2)
   toAppend.push(messageDiv)
 
+  const navDiv = document.createElement('div')
+
+  const leftButton = document.createElement('button')
+  leftButton.type = 'button'
+  leftButton.innerText = '<'
+  leftButton.addEventListener('click', prevCommit)
+  navDiv.appendChild(leftButton)
+
+  const textNode = document.createTextNode(` ${parseInt(commitIdx) + 1}/${commits.length} `);
+  navDiv.appendChild(textNode)
+
+  const rightButton = document.createElement('button')
+  rightButton.type = 'button'
+  rightButton.innerText = '>'
+  rightButton.addEventListener('click', nextCommit)
+
+  navDiv.appendChild(rightButton)
+  toAppend.push(navDiv)
+
+
   toAppend.forEach(el => githubResults.appendChild(el))
+}
+
+function nextCommit(){
+  const nextIdx = parseInt(document.getElementById('githubSHA').getAttribute('data-idx')) + 1
+  console.log(document.getElementById('githubSHA').getAttribute('data-idx'))
+  console.log(nextIdx)
+  console.log(commits.length)
+  displayCommit(nextIdx % commits.length)
+}
+
+function prevCommit(){
+  const prevIdx = parseInt(document.getElementById('githubSHA').getAttribute('data-idx')) - 1
+  console.log(document.getElementById('githubSHA').getAttribute('data-idx'))
+  console.log(prevIdx)
+  console.log(commits.length)
+  console.log(prevIdx % commits.length)
+  // debugger
+  prevIdx < 0 ? displayCommit(commits.length + prevIdx) : displayCommit(prevIdx)
 }
 
 function ISOToGitLogFormat(dateString){
@@ -654,15 +696,19 @@ async function getGithubAPI(url, inputVal){
   console.log(response.body)
   const data = await response.json()
   console.log({data})
-  return data[0]
+  return data
 }
 
 function handleGithubClearClick(e){
   e.preventDefault()
-  const githubResults = document.getElementById('githubResults')
   document.getElementById('githubInput').value = ''
+  commits = []
+  clearGithubResults()
+}
+
+function clearGithubResults(){
+  const githubResults = document.getElementById('githubResults')
   while(githubResults.firstChild) githubResults.removeChild(githubResults.firstChild)
-  // githubResults.innerText
 }
 
 async function handleHashInputKeydown(e){
