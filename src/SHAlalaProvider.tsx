@@ -30,7 +30,7 @@ const SHAlalaContext = React.createContext<ISHAlalaContext | null>(null);
 const SHAlalaProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const noteSynthRef = useRef(new Tone.PolySynth(Tone.Synth).toDestination())
   const droneSynthRef = useRef(new Tone.PolySynth(Tone.Synth).toDestination())
-  const events: Array<number> = []
+  const timer = useRef<number | null>(null)
   const [initialized, setInitialized] = useState<boolean>(false);
   const [tempo, setTempo] = useState<number>(180);
   const [scale, setScale] = useState<string>('Ionian')
@@ -40,7 +40,10 @@ const SHAlalaProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) =>
 
   const updateTempo = (val: number) => {
     setTempo(val);
-    Tone.Transport.bpm.rampTo(val, 0.1);
+    // Tone.Transport.bpm.value = val
+    if(timer.current != null){ clearTimeout(timer.current) }
+    timer.current = setTimeout(() => { Tone.Transport.bpm.rampTo(val, 0.1) }, 1000);
+    // Tone.getTransport().bpm.setValueAtTime(val, Tone.getTransport().now())
   };
 
   const initTone = async () => {
@@ -61,32 +64,13 @@ const SHAlalaProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) =>
     playNotePart(notesToPlay);
   }
 
-  const clearEvents = async (events: Array<number>) => {
-    return new Promise<void>(resolve => {
-      for(let i = 0; i < events.length; i++){
-        let event = events.pop();
-        Tone.Transport.clear(event);
-      }
-      return resolve()
-    })
-  }
-
-  // const killDrone = () => {
-  //   droneSynth.current.triggerRelease('Ab2');
-  // }
-
   const playNotePart = async (notesToPlay:any) => {
     // await clearEvents(events);
     // killDrone();
-
     Tone.Transport.stop();
     Tone.Transport.cancel(0);
     await noteSynthRef.current.releaseAll();
     await droneSynthRef.current.releaseAll();
-    noteSynthRef.current?.dispose();
-    droneSynthRef.current?.dispose();
-    noteSynthRef.current = new Tone.PolySynth(Tone.Synth).toDestination();
-    droneSynthRef.current = new Tone.PolySynth(Tone.Synth).toDestination();
 
     let startTime = 0;
     console.log(notesToPlay)
@@ -97,24 +81,22 @@ const SHAlalaProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) =>
     console.log({totalDuration})
 
     // droneSynthRef.current.triggerAttack('Ab2')
-    let eventID = Tone.Transport.scheduleOnce(time => {
+    Tone.Transport.scheduleOnce(time => {
       droneSynthRef.current.triggerAttackRelease('Ab2', totalDuration, time);
     }, 0)
-    events.push(eventID);
 
     notesToPlay.forEach((note:any) => {
       if (note.note !== ''){
-        let eventID = Tone.Transport.scheduleOnce(time => {
+        Tone.Transport.scheduleOnce(time => {
           noteSynthRef.current.triggerAttackRelease(note.note, note.duration, time)
         }, startTime);
-        events.push(eventID);
       }
       startTime += Tone.Time(note.duration).toSeconds();
     })
 
-    Tone.Transport.scheduleOnce(time => {
-      Tone.Transport.stop(time);
-    }, totalDuration)
+    // Tone.Transport.scheduleOnce(time => {
+    //   Tone.Transport.stop(time);
+    // }, totalDuration)
 
     Tone.Transport.start();
   }

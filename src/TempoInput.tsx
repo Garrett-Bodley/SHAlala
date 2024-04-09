@@ -1,4 +1,5 @@
 import { FC, useState, ChangeEvent } from 'react'
+import { useSHAlala } from './SHAlalaProvider'
 
 interface TempoInputProps {
 
@@ -7,9 +8,10 @@ interface TempoInputProps {
 
 const TempoInput: FC<TempoInputProps> = ({}) => {
 
-  const [tempo, setTempo] = useState<number>(180);
+  const {tempo, updateTempo } = useSHAlala();
+
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTempo(parseInt(e.target.value));
+    updateTempo(parseInt(e.target.value))
   }
 
   return(
