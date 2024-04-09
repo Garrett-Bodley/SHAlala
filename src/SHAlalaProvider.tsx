@@ -1,10 +1,11 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef } from "react";
 import * as Tone from "tone";
 import { SCALES, NOTE_DURATIONS } from './scales.tsx'
 
 interface ISHAlalaContext {
   initialized: boolean;
-  // setInitialized: React.Dispatch<React.SetStateAction<boolean>>;
+  string: string;
+  setString: React.Dispatch<React.SetStateAction<string>>
   tempo: number;
   updateTempo: (val: number) => void;
   scale: string;
@@ -12,20 +13,8 @@ interface ISHAlalaContext {
   playTheShortHash: boolean;
   setPlayTheShortHash: React.Dispatch<React.SetStateAction<boolean>>
   SCALES: typeof SCALES
-  noteSynth: Tone.PolySynth;
-  droneSynth: Tone.PolySynth;
-  hashObj: IhashObj;
-  playHash: () => void;
-}
-
-interface IhashObj {
   hash: string;
-  hashToPlay: string;
-}
-
-const defaultHashObj = {
-  hash: 'da39a3ee5e6b4b0d3255bfef95601890afd80709',
-  hashToPlay: 'da39a3ee'
+  playHash: () => void;
 }
 
 export const useSHAlala = (): ISHAlalaContext => {
@@ -39,13 +28,15 @@ export const useSHAlala = (): ISHAlalaContext => {
 const SHAlalaContext = React.createContext<ISHAlalaContext | null>(null);
 
 const SHAlalaProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
-  let noteSynth = new Tone.PolySynth(Tone.Synth).toDestination();
-  let droneSynth = new Tone.PolySynth(Tone.Synth).toDestination();
+  const noteSynthRef = useRef(new Tone.PolySynth(Tone.Synth).toDestination())
+  const droneSynthRef = useRef(new Tone.PolySynth(Tone.Synth).toDestination())
+  const events: Array<number> = []
   const [initialized, setInitialized] = useState<boolean>(false);
   const [tempo, setTempo] = useState<number>(180);
   const [scale, setScale] = useState<string>('Ionian')
   const [playTheShortHash, setPlayTheShortHash] = useState<boolean>(true)
-  const [hashObj, setHashObj] = useState<IhashObj>(defaultHashObj)
+  const [string, setString] = useState<string>('')
+  const [hash, setHash] = useState<string>('')
 
   const updateTempo = (val: number) => {
     setTempo(val);
@@ -61,17 +52,41 @@ const SHAlalaProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) =>
 
   const playHash = async () => {
     if(!initialized) await initTone();
-    const notesToPlay = hashToNotesAndRhythm(hashObj, scale)
+    const hash = await computeSHA1(string, null);
+    const hashToPlay = playTheShortHash ? hash.slice(0, 8) : hash
+    console.log({string, hash, hashToPlay})
+    setHash(hash)
+    const notesToPlay = hashToNotesAndRhythm(hash, hashToPlay, scale)
+    console.log({notesToPlay})
     playNotePart(notesToPlay);
   }
 
-  const playNotePart = (notesToPlay:any) => {
+  const clearEvents = async (events: Array<number>) => {
+    return new Promise<void>(resolve => {
+      for(let i = 0; i < events.length; i++){
+        let event = events.pop();
+        Tone.Transport.clear(event);
+      }
+      return resolve()
+    })
+  }
+
+  // const killDrone = () => {
+  //   droneSynth.current.triggerRelease('Ab2');
+  // }
+
+  const playNotePart = async (notesToPlay:any) => {
+    // await clearEvents(events);
+    // killDrone();
+
     Tone.Transport.stop();
     Tone.Transport.cancel(0);
-    noteSynth?.dispose();
-    droneSynth?.dispose();
-    noteSynth = new Tone.PolySynth(Tone.Synth).toDestination();
-    droneSynth = new Tone.PolySynth(Tone.Synth).toDestination();
+    await noteSynthRef.current.releaseAll();
+    await droneSynthRef.current.releaseAll();
+    noteSynthRef.current?.dispose();
+    droneSynthRef.current?.dispose();
+    noteSynthRef.current = new Tone.PolySynth(Tone.Synth).toDestination();
+    droneSynthRef.current = new Tone.PolySynth(Tone.Synth).toDestination();
 
     let startTime = 0;
     console.log(notesToPlay)
@@ -81,16 +96,18 @@ const SHAlalaProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) =>
     }, 0)
     console.log({totalDuration})
 
-    droneSynth.triggerAttack('Ab2')
-    Tone.Transport.scheduleOnce(_time => {
-      droneSynth.triggerRelease('Ab2');
-    }, totalDuration)
+    // droneSynthRef.current.triggerAttack('Ab2')
+    let eventID = Tone.Transport.scheduleOnce(time => {
+      droneSynthRef.current.triggerAttackRelease('Ab2', totalDuration, time);
+    }, 0)
+    events.push(eventID);
 
     notesToPlay.forEach((note:any) => {
       if (note.note !== ''){
-        Tone.Transport.scheduleOnce(time => {
-          noteSynth.triggerAttackRelease(note.note, note.duration, time)
+        let eventID = Tone.Transport.scheduleOnce(time => {
+          noteSynthRef.current.triggerAttackRelease(note.note, note.duration, time)
         }, startTime);
+        events.push(eventID);
       }
       startTime += Tone.Time(note.duration).toSeconds();
     })
@@ -102,14 +119,45 @@ const SHAlalaProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) =>
     Tone.Transport.start();
   }
 
-  const hashToNotesAndRhythm = (hashObj:IhashObj, scale: string) => {
+  const computeSHA1 = async(string:string, file:File|null) => {
+    const textBuffer = new TextEncoder().encode(string);
+    const fileBuffer = await readFileAsBuffer(file)
+    const joinedBuffer = concatBuffers(fileBuffer, textBuffer)
+    const hashBuffer = await crypto.subtle.digest("SHA-1", joinedBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join(""); // convert bytes to hex string
+    return hashHex;
+  }
+
+  const readFileAsBuffer = async (file: File|null) => {
+    return new Promise<Uint8Array>((resolve, reject) => {
+      if(!file) return resolve(new Uint8Array)
+      const reader = new FileReader();
+      reader.onload = () => resolve(new Uint8Array(reader.result as ArrayBuffer));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(file);
+    })
+  }
+
+  function concatBuffers(buf1: Uint8Array, buf2:  Uint8Array){
+    if (!buf1) return buf2
+    if (!buf2) return buf1
+    const combined = new Uint8Array(buf1.byteLength + buf2.byteLength)
+    combined.set(new Uint8Array(buf1), 0)
+    combined.set(new Uint8Array(buf2), buf1.byteLength)
+    return combined.buffer
+  }
+
+  const hashToNotesAndRhythm = (hash: string, hashToPlay: string, scale: string) => {
     const prevBPM = Tone.Transport.bpm.value
     Tone.Transport.bpm.value = 180;
     let totalDuration = 0
     let currentDuration
-    const notes = hashObj.hashToPlay.split("").map((char, idx) => {
+    const notes = hashToPlay.split("").map((char, idx) => {
       if (idx == 0){
-        currentDuration = NOTE_DURATIONS[Number(`0x${hashObj.hash}`) % NOTE_DURATIONS.length]
+        currentDuration = NOTE_DURATIONS[Number(`0x${hash}`) % NOTE_DURATIONS.length]
       }else{
         currentDuration = NOTE_DURATIONS[Math.round(totalDuration * 10) % NOTE_DURATIONS.length]
       }
@@ -122,6 +170,8 @@ const SHAlalaProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) =>
 
   const API: ISHAlalaContext = {
     initialized,
+    string,
+    setString,
     tempo,
     updateTempo,
     scale,
@@ -129,9 +179,7 @@ const SHAlalaProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) =>
     SCALES,
     playTheShortHash,
     setPlayTheShortHash,
-    noteSynth,
-    droneSynth,
-    hashObj,
+    hash,
     playHash
   };
 

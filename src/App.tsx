@@ -16,7 +16,6 @@ function App() {
   const [fileInput, setFileInput] = useState<File | null>(null);
   const [isChecked, setIsChecked] = useState<boolean>(true);
   const [scale, setScale] = useState<string>('ionian')
-  const [hash, setHash] = useState<string>('')
 
   const handleHashInputOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     setHashInput(e.target.value);
@@ -87,9 +86,6 @@ function App() {
           />
         <hr/>
         <StringFileInput
-          stringInput={stringInput}
-          handleStringOnChange={handleStringOnChange}
-          clearStringInput={clearStringInput}
           handleFileOnChange={handleFileOnChange}
           clearFileInput={clearFileInput}
           />
@@ -100,7 +96,7 @@ function App() {
         />
         <TempoInput/>
         <Play/>
-        <ShowSHA hash={hash}/>
+        <ShowSHA/>
       </form>
     </>
   );

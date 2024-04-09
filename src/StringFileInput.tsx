@@ -1,17 +1,12 @@
 import { FC, ChangeEvent, MouseEvent, useRef } from "react";
+import { useSHAlala } from "./SHAlalaProvider";
 
 interface StringFileInputProps {
-  stringInput: string;
-  handleStringOnChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  clearStringInput: (e: MouseEvent<HTMLButtonElement>) => void;
   handleFileOnChange: (e: ChangeEvent<HTMLInputElement>) => void;
   clearFileInput: () => void;
 }
 
 const StringFileInput: FC<StringFileInputProps> = ({
-  stringInput,
-  handleStringOnChange,
-  clearStringInput,
   handleFileOnChange,
   clearFileInput,
 }) => {
@@ -21,6 +16,16 @@ const StringFileInput: FC<StringFileInputProps> = ({
     if (fileRef.current) fileRef.current.value = "";
     clearFileInput();
   };
+
+  const { string, setString } = useSHAlala()
+
+  const handleStringOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setString(e.target.value);
+  }
+
+  const clearString = (_e: React.MouseEvent<HTMLButtonElement>) => {
+    setString('')
+  }
 
   return (
     <>
@@ -34,10 +39,10 @@ const StringFileInput: FC<StringFileInputProps> = ({
           id="formInput"
           type="text"
           placeholder="enter text here"
-          value={stringInput}
+          value={string}
           onChange={handleStringOnChange}
         />
-        <button onClick={clearStringInput} type="button">
+        <button onClick={clearString} type="button">
           X
         </button>
       </div>
