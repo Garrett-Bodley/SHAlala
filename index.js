@@ -320,6 +320,7 @@ document.addEventListener("DOMContentLoaded", (_e) => {
 
 async function initTone() {
   if (toneStart) return;
+  if(toneLoading) return;
   toneLoading = true;
   await Tone.start();
   Tone.Destination.volume.value = parseFloat(-17);
@@ -345,6 +346,9 @@ async function initTone() {
   }).toDestination();
 
   await Tone.loaded();
+
+  // await Promise.all([toneStartPromise, Tone.loaded()])
+  console.log('tone has loaded')
   toneLoading = false;
   toneStart = true;
 }
@@ -355,7 +359,6 @@ async function handleRangeOnInput(e) {
   let newRangeValue = e.target.value;
   document.getElementById("range-value").innerText = `${newRangeValue} BPM`;
   Tone.Transport.bpm.rampTo(newRangeValue, 0.1);
-  // console.log({ newRangeValue });
 }
 
 async function handleOnSubmit(e) {
@@ -438,7 +441,7 @@ function hashToSeed(hash) {
   // converting a 40char hex string into a number generates a value that is far too large.
   // Instead we convert chunks of the hash into integer values and sum them
   if (hash.length < 8) return parseInt(hash, 16);
-  const chunkSize = hash.length / 8;
+  const chunkSize = 5;
   let seed = 0;
   for (let i = 0; i < hash.length; i += chunkSize) {
     const chunk = hash.slice(i, i + chunkSize);
@@ -703,6 +706,7 @@ function displayCommit(commitIdx) {
   toAppend.push(navDiv);
 
   toAppend.forEach((el) => githubResults.appendChild(el));
+  playHash(commit.sha)
 }
 
 function nextCommit() {
@@ -831,7 +835,7 @@ function displayHashInputError(inputString) {
 }
 
 async function playHash(hash) {
-  if (toneLoading) return;
+  // if (toneLoading) return;
   if (toneStart == false) await initTone();
   const playShortHash = document.getElementById(
     "playShortHashCheckbox"
