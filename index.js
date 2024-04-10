@@ -272,6 +272,11 @@ const SCALES = {
 }
 
 let toneStart = false;
+let toneLoading = false;
+
+const instruments = ['piano', 'guitar-electric', 'guitar-acoustic', 'harmonium', 'xylophone', 'harp', 'clarinet', 'violin', 'cello']
+const synths = {}
+
 let synth;
 let drone;
 let chordSynths = []
@@ -292,15 +297,35 @@ document.addEventListener("DOMContentLoaded", (_e) => {
 });
 
 async function initTone() {
-  toneStart = true;
+  toneLoading = true;
   await Tone.start();
   Tone.Destination.volume.value = parseFloat(-17);
   Tone.Transport.bpm.value = 180;
+
+  Array.from(document.getElementById('instrumentSelect').children).forEach(option => {
+    let instrument = option.value
+    synths[instrument] = SampleLibrary.load({
+      instruments: instrument
+    }).toDestination();
+  })
+  // debugger
+  // instruments.forEach(instrument => {
+  //   synths[instrument] = SampleLibrary.load({
+  //     instruments: instrument
+  //   }).toDestination();
+  // })
+
+  drone = SampleLibrary.load({
+    instruments: 'bass-electric'
+  }).toDestination();
+
+  await Tone.loaded();
+  toneLoading = false;
+  toneStart = true;
 }
 
 async function handleRangeOnInput(e) {
   e.preventDefault();
-  if (toneStart == false) await initTone();
 
   let newRangeValue = e.target.value;
   document.getElementById("range-value").innerText = `${newRangeValue} BPM`;
@@ -310,7 +335,6 @@ async function handleRangeOnInput(e) {
 
 async function handleOnSubmit(e) {
   e.preventDefault();
-  if (toneStart == false) await initTone();
 
   const gitSHA = document.getElementById('githubSHA')
   const inputText = document.getElementById("formInput").value;
@@ -404,38 +428,33 @@ function hashToNotesWithTempo(hash, scale) {
 async function playNotePart(notes) {
   // This plays the hash once and then stops. It works!
   // No Chords
+  const scaleToPlay = document.getElementById("scaleSelect").value
+  const synthToPlay = document.getElementById('instrumentSelect').value
+  // synth = scaleToPlay === 'mccoy' ? synths['piano'] : synths[synthToPlay]
+  synth = synths[synthToPlay]
   console.log('playNotePart')
   console.log({notes})
   Tone.Transport.stop();
   Tone.Transport.cancel(0);
-  synth?.dispose();
-  drone?.dispose();
-  synth = SampleLibrary.load({
-  instruments: 'piano'
-  }).toDestination();
-  drone = SampleLibrary.load({
-  instruments: "bass-electric"
-  }).toDestination();
+  synth.releaseAll()
+  drone.releaseAll()
 
-  await Tone.loaded();
   // synth = new Tone.PolySynth(Tone.Synth).toDestination();
   // drone = new Tone.PolySynth(Tone.Synth).toDestination();
 
-  let startTime = 0;
+  let startTime = 0
 
   const totalDuration = notes.reduce((accum, note) => {
     return accum + Tone.Time(note.duration)
   }, 0)
   console.log({totalDuration})
 
-  const scaleToPlay = document.getElementById("scaleSelect").value
 
   // Hacky fix bc Mccoy stuff is in C and I didn't have time to transpose it yet.
   if(scaleToPlay != 'mccoy'){
-    drone.triggerAttack('Ab2')
     Tone.Transport.scheduleOnce(_time => {
-      drone.triggerRelease('Ab2');
-    }, totalDuration)
+      drone.triggerAttackRelease('Ab1', totalDuration);
+    }, startTime)
   }
 
   notes.forEach((note) => {
@@ -452,9 +471,9 @@ async function playNotePart(notes) {
 
 function stopSound(e){
   e.preventDefault();
-  synth?.dispose()
-  drone?.dispose()
-  Tone.Transport.cancel()
+  Object.values(synths).forEach(sampler => sampler.releaseAll())
+  drone.releaseAll();
+  Tone.Transport.cancel(0)
   Tone.Transport.stop()
 }
 
@@ -747,6 +766,8 @@ function displayHashInputError(inputString){
 }
 
 async function playHash(hash){
+  if(toneLoading) return;
+  if (toneStart == false) await initTone();
   const playShortHash = document.getElementById("playShortHashCheckbox").checked;
   const scaleToPlay = document.getElementById("scaleSelect").value
   const hashToPlay = playShortHash ? hash.slice(0, 8) : hash;
