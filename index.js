@@ -293,6 +293,8 @@ let chordSynths = [];
 let commits = [];
 
 document.addEventListener("DOMContentLoaded", (_e) => {
+  document.addEventListener('scroll', initTone());
+  document.addEventListener('click', initTone());
   document.getElementById("form").addEventListener("submit", handleOnSubmit);
   document
     .getElementById("range-input")
@@ -317,6 +319,7 @@ document.addEventListener("DOMContentLoaded", (_e) => {
 });
 
 async function initTone() {
+  if (toneStart) return;
   toneLoading = true;
   await Tone.start();
   Tone.Destination.volume.value = parseFloat(-17);
@@ -706,8 +709,6 @@ function nextCommit() {
   const nextIdx =
     parseInt(document.getElementById("githubSHA").getAttribute("data-idx")) + 1;
   console.log(document.getElementById("githubSHA").getAttribute("data-idx"));
-  console.log(nextIdx);
-  console.log(commits.length);
   displayCommit(nextIdx % commits.length);
 }
 
@@ -715,10 +716,6 @@ function prevCommit() {
   const prevIdx =
     parseInt(document.getElementById("githubSHA").getAttribute("data-idx")) - 1;
   console.log(document.getElementById("githubSHA").getAttribute("data-idx"));
-  console.log(prevIdx);
-  console.log(commits.length);
-  console.log(prevIdx % commits.length);
-  // debugger
   prevIdx < 0
     ? displayCommit(commits.length + prevIdx)
     : displayCommit(prevIdx);
