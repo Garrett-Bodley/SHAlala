@@ -407,17 +407,29 @@ function hashToNotes(hash, scale) {
   return hash.split("").map((char) => SCALES[scale][char]);
 }
 
-function hashToNotesWithTempo(hash, scale) {
+function hashToSeed(hash){
+  // converting a 40char hex string into a number generates a value that is far too large.
+  // Instead we convert chunks of the hash into integer values and sum them
+  if(hash.length < 8) return parseInt(hash, 16)
+  const chunkSize = hash.length / 8;
+  let seed = 0
+  for(let i = 0; i < hash.length; i += chunkSize){
+    const chunk = hash.slice(i, i + chunkSize);
+    seed += parseInt(chunk, 16) % Number.MAX_SAFE_INTEGER;
+    seed = seed % Number.MAX_SAFE_INTEGER
+  }
+  return seed
+}
+
+function hashToNotesWithTempo(hashToPlay, hash, scale) {
   const prevBPM = Tone.Transport.bpm.value
+  const seed = hashToSeed(hash)
+  console.log(seed)
   Tone.Transport.bpm.value = 180
   let totalDuration = 0
   let currentDuration
-  const notes = hash.split("").map((char, idx) => {
-    if (idx == 0){
-      currentDuration = NOTE_DURATIONS[Number(`0x${char}`) % NOTE_DURATIONS.length]
-    }else{
-      currentDuration = NOTE_DURATIONS[Math.round(totalDuration * 10) % NOTE_DURATIONS.length]
-    }
+  const notes = hashToPlay.split("").map((char, idx) => {
+    currentDuration = NOTE_DURATIONS[((seed + Math.round(totalDuration * 10)) & Number.MAX_SAFE_INTEGER) % NOTE_DURATIONS.length]
     totalDuration += Tone.Time(currentDuration)
     return { note: SCALES[scale][char], duration: currentDuration }
   })
@@ -771,7 +783,7 @@ async function playHash(hash){
   const playShortHash = document.getElementById("playShortHashCheckbox").checked;
   const scaleToPlay = document.getElementById("scaleSelect").value
   const hashToPlay = playShortHash ? hash.slice(0, 8) : hash;
-  const notes = hashToNotesWithTempo(hashToPlay, scaleToPlay)
+  const notes = hashToNotesWithTempo(hashToPlay, hash, scaleToPlay)
 
   await playNotePart(notes)
 }
