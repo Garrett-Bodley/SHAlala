@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import * as Tone from "tone";
 import { SCALES, NOTE_DURATIONS } from './scales.tsx'
 
@@ -40,11 +40,16 @@ const SHAlalaProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) =>
 
   const updateTempo = (val: number) => {
     setTempo(val);
+    // console.log({val})
     // Tone.Transport.bpm.value = val
-    if(timer.current != null){ clearTimeout(timer.current) }
-    timer.current = setTimeout(() => { Tone.Transport.bpm.rampTo(val, 0.1) }, 1000);
+    // if(timer.current != null){ clearTimeout(timer.current) }
+    // timer.current = setTimeout(() => { Tone.Transport.bpm.rampTo(val, 0.1) }, 1000);
     // Tone.getTransport().bpm.setValueAtTime(val, Tone.getTransport().now())
   };
+
+  useEffect(() => {
+    Tone.Transport.bpm.rampTo(tempo, 0.1)
+  }, [tempo])
 
   const initTone = async () => {
     setInitialized(true);
