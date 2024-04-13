@@ -293,6 +293,10 @@ let chordSynths = [];
 let commits = [];
 
 document.addEventListener("DOMContentLoaded", (_e) => {
+  synths.piano = SampleLibrary.load({
+    instruments: 'piano',
+  })
+
   // document.addEventListener('scroll', initTone());
   // document.addEventListener('click', initTone());
   document.getElementById("form").addEventListener("submit", handleOnSubmit);
@@ -326,14 +330,16 @@ async function initTone() {
   Tone.Destination.volume.value = parseFloat(-17);
   Tone.Transport.bpm.value = 180;
 
-  Array.from(document.getElementById("instrumentSelect").children).forEach(
-    (option) => {
-      let instrument = option.value;
-      synths[instrument] = SampleLibrary.load({
-        instruments: instrument,
-      }).toDestination();
-    }
-  );
+  synths.piano.toDestination();
+
+  // Array.from(document.getElementById("instrumentSelect").children).forEach(
+  //   (option) => {
+  //     let instrument = option.value;
+  //     synths[instrument] = SampleLibrary.load({
+  //       instruments: instrument,
+  //     }).toDestination();
+  //   }
+  // );
   // debugger
   // instruments.forEach(instrument => {
   //   synths[instrument] = SampleLibrary.load({
@@ -864,7 +870,7 @@ function handleHashInputClear(e) {
 var SampleLibrary = {
   minify: false,
   ext: ".[mp3|ogg]", // use setExt to change the extensions on all files // do not change this variable //
-  baseUrl: "https://nbrosowsky.github.io/tonejs-instruments/samples/",
+  baseUrl: import.meta.env.MODE === "development" ? "/samples/" : "/SHAlala/samples/",
   list: [
     "bass-electric",
     "bassoon",
