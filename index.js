@@ -295,7 +295,16 @@ let commits = [];
 document.addEventListener("DOMContentLoaded", (_e) => {
   synths.piano = SampleLibrary.load({
     instruments: 'piano',
-  })
+  }).toDestination();
+
+  document.getElementById("instrumentSelect").addEventListener('change', e => {
+    const option = e.target.selectedOptions[0];
+    let instrument = option.value;
+    synths[instrument] = SampleLibrary.load({
+      instruments: instrument,
+    }).toDestination();
+  });
+
 
   // document.addEventListener('scroll', initTone());
   // document.addEventListener('click', initTone());
@@ -330,16 +339,6 @@ async function initTone() {
   Tone.Destination.volume.value = parseFloat(-17);
   Tone.Transport.bpm.value = 180;
 
-  synths.piano.toDestination();
-
-  // Array.from(document.getElementById("instrumentSelect").children).forEach(
-  //   (option) => {
-  //     let instrument = option.value;
-  //     synths[instrument] = SampleLibrary.load({
-  //       instruments: instrument,
-  //     }).toDestination();
-  //   }
-  // );
   // debugger
   // instruments.forEach(instrument => {
   //   synths[instrument] = SampleLibrary.load({
