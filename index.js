@@ -293,8 +293,8 @@ let chordSynths = [];
 let commits = [];
 
 document.addEventListener("DOMContentLoaded", (_e) => {
-  document.addEventListener('scroll', initTone());
-  document.addEventListener('click', initTone());
+  // document.addEventListener('scroll', initTone());
+  // document.addEventListener('click', initTone());
   document.getElementById("form").addEventListener("submit", handleOnSubmit);
   document
     .getElementById("range-input")
